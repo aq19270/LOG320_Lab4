@@ -137,17 +137,18 @@ class Client {
     }
 
     public static void printBoardInConsole(int[][] board) {
-        System.out.println("___________________");
-        System.out.println(" \t A B C D E F G H");
+        System.out.println("―――――――――――――――――――――――――――――――――――――");
+        System.out.println(" \t  A   B   C   D   E   F   G   H  ");
         StringBuilder nextRowString = new StringBuilder();
         for (int y = 7; y >= 0 ; y--) {
             nextRowString.append(y + 1).append("\t|");
             for (int x = 0; x < 8; x++) {
-                nextRowString.append(board[x][y]).append("|");
+                nextRowString.append(" ").append(board[x][y]).append(" |");
             }
             System.out.println(nextRowString);
             nextRowString.setLength(0);
         }
+        System.out.println("―――――――――――――――――――――――――――――――――――――");
     }
 }
 

@@ -10,7 +10,7 @@ public class Minmax {
             // return evaluation(board)
         }
         if (isMaximizing) {
-            double bestScore = -1000000000;
+            double bestScore = Double.MIN_VALUE;
             // String[] possibleMove = availableMove(board);
             // for (int i=0;i<possibleMove.length;i++){
             // Faire le move i sur le board
@@ -20,7 +20,7 @@ public class Minmax {
             // }
             return bestScore;
         } else {
-            double bestScore = 1000000000;
+            double bestScore = Double.MAX_VALUE;
             // String[] possibleMove = availableMove(board);
             // for (int i=0;i<possibleMove.length;i++){
             // Faire le move i sur le board

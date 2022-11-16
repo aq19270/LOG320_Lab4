@@ -146,7 +146,7 @@ class Client {
         System.out.println("Entrez votre coup : ");
         String move = null;
         // String bestMove = "";
-        // double bestScore = -1000000000;
+        // double bestScore = Double.MIN_VALUE;
         // String[] possibleMove = availableMove(board);
         // for (int i=0;i<possibleMove.length;i++){
         // Faire le move i sur le board

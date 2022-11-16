@@ -58,10 +58,8 @@ public class Minmax {
     }
 
     public static int[][] executeMove(String move, int color, int[][] board) {
-        int[] start;
-        int[] end;
-        start = Movement.getPosFromString(move.substring(0, 2));
-        end = Movement.getPosFromString(move.substring(2));
+        int[] start = Movement.getPosFromString(move.substring(0, 2));
+        int[] end = Movement.getPosFromString(move.substring(2));
         board[start[0]][start[1] - 1] = 0;
         board[end[0]][end[1] - 1] = color;
         return board;

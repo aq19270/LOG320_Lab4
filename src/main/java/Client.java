@@ -1,6 +1,9 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+
 import Laboratoire4.Movement;
+import Laboratoire4.Pion;
 
 class Client {
     public static void main(String[] args) {
@@ -8,14 +11,17 @@ class Client {
         Socket MyClient;
         BufferedInputStream input;
         BufferedOutputStream output;
-        int[][] board = new int[8][8];
-
         try {
             MyClient = new Socket("localhost", 8888);
 
             input = new BufferedInputStream(MyClient.getInputStream());
             output = new BufferedOutputStream(MyClient.getOutputStream());
             BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+
+            int[][] board = new int[8][8];
+//            ArrayList<Pion> pionsBlanc = new ArrayList<>();
+//            ArrayList<Pion> pionsNoir = new ArrayList<>();
+            Pion.colors playerColor = Pion.colors.none;
 
             while (true) {
                 char cmd = 0;
@@ -26,15 +32,35 @@ class Client {
                 switch (cmd) {
                     // Debut de la partie en joueur blanc
                     case '1' -> {
+//                        pionsBlanc = getInitialWhitePion();
+//                        pionsNoir = getInitialBlackPion();
+                        playerColor = Pion.colors.white;
                         board = handleNewGameWhite(input, output, console, board);
                     }
 
                     // Debut de la partie en joueur Noir
-                    case '2' -> board = handleNewGameBlack(input, output, console, board);
+                    case '2' -> {
+//                        pionsBlanc = getInitialWhitePion();
+//                        pionsNoir = getInitialBlackPion();
+                        playerColor = Pion.colors.black;
+                        board = handleNewGameBlack(input, output, console, board);
+                    }
 
                     // Le serveur demande le prochain coup
                     // Le message contient aussi le dernier coup joue.
-                    case '3' -> handleServerRequestUpdate(input, output, console);
+                    case '3' -> {
+                        String move = handleServerRequestUpdate(input, output, console);
+                        // Ici on assume que notre coup sera toujours valide puisque la fonction a été valider
+                        int[] initPos = getPosFromString(move.substring(0, 2));
+                        int startIndex = 2;
+                        if(move.length() == 5) {
+                            startIndex = 3;
+                        }
+                        int[] nextPos = getPosFromString(move.substring(startIndex));
+
+                        board[initPos[0]][initPos[1]] = 0;
+                        board[nextPos[0]][nextPos[1]] = playerColor.getValue();
+                    }
 
                     // Le dernier coup est invalide
                     case '4' -> handleLastMoveInvalid(input, output, console);
@@ -61,7 +87,8 @@ class Client {
         boardValues = s.split(" ");
         int x = 0, y = 0;
         for (int i = 0; i < boardValues.length; i++) {
-            board[x][y] = Integer.parseInt(boardValues[i]);
+            Integer value = Integer.parseInt(boardValues[i]);
+            board[x][y] = value;
             x++;
             if (x == 8) {
                 x = 0;
@@ -103,7 +130,7 @@ class Client {
         return board;
     }
 
-    private static void handleServerRequestUpdate(BufferedInputStream input, BufferedOutputStream output, BufferedReader console) throws IOException {
+    private static String handleServerRequestUpdate(BufferedInputStream input, BufferedOutputStream output, BufferedReader console) throws IOException {
         byte[] aBuffer = new byte[16];
 
         int size = input.available();
@@ -117,6 +144,7 @@ class Client {
         move = console.readLine();
         output.write(move.getBytes(), 0, move.length());
         output.flush();
+        return move;
     }
 
     private static void handleLastMoveInvalid(BufferedInputStream input, BufferedOutputStream output, BufferedReader console) throws IOException {
@@ -152,6 +180,53 @@ class Client {
             nextRowString.setLength(0);
         }
         System.out.println("―――――――――――――――――――――――――――――――――――――");
+    }
+
+//    public static ArrayList<Pion> getInitialWhitePion() {
+//        ArrayList<Pion> Pions = new ArrayList<Pion>();
+//
+//        Pions.add(new Pion(1, 2));
+//        Pions.add(new Pion(1, 3));
+//        Pions.add(new Pion(1, 4));
+//        Pions.add(new Pion(1, 5));
+//        Pions.add(new Pion(1, 6));
+//        Pions.add(new Pion(1, 7));
+//        Pions.add(new Pion(8, 2));
+//        Pions.add(new Pion(8, 3));
+//        Pions.add(new Pion(8, 4));
+//        Pions.add(new Pion(8, 5));
+//        Pions.add(new Pion(8, 6));
+//        Pions.add(new Pion(8, 7));
+//
+//        return Pions;
+//    }
+//
+//    public static ArrayList<Pion> getInitialBlackPion() {
+//        ArrayList<Pion> Pions = new ArrayList<Pion>();
+//
+//        Pions.add(new Pion(2, 1));
+//        Pions.add(new Pion(3, 1));
+//        Pions.add(new Pion(4, 1));
+//        Pions.add(new Pion(5, 1));
+//        Pions.add(new Pion(6, 1));
+//        Pions.add(new Pion(7, 1));
+//        Pions.add(new Pion(2, 8));
+//        Pions.add(new Pion(3, 8));
+//        Pions.add(new Pion(4, 8));
+//        Pions.add(new Pion(5, 8));
+//        Pions.add(new Pion(6, 8));
+//        Pions.add(new Pion(7, 8));
+//
+//        return Pions;
+//    }
+
+    public static int[] getPosFromString(String pos) {
+        // 65 est la valeur de A qui est notre index 0. 65 - 65 donnerait la case 0;
+        final int VALUE_OF_A_IN_ASCII = 65;
+
+        int x = ((int) pos.charAt(0)) - VALUE_OF_A_IN_ASCII;
+        int y = (int) pos.charAt(1);
+        return new int[]{x, y};
     }
 }
 

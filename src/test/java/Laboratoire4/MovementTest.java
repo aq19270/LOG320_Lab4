@@ -41,7 +41,68 @@ public class MovementTest {
     }
 
     @Test
+    public void evaluateBoard() {
+        Assert.assertEquals(0, Movement.evaluateBoard(board, Pion.colors.white.getValue()));
+
+        board = new int[][]{
+                { // X1
+                        0,4,4,4,4,0,0,0
+                },
+                { //X2
+                        2,0,0,0,0,0,0,2
+                },
+                { //X3
+                        2,0,0,0,4,2,0,0
+                },
+                { //X4
+                        0,0,2,4,0,4,0,0
+                },
+                { //X5
+                        2,0,2,0,2,0,0,0
+                },
+                { //X6
+                        2,0,0,0,4,0,0,2
+                },
+                {  //X7
+                        4,0,0,0,0,0,0,0
+                },
+                { //X8
+                        0,0,4,0,4,4,2,0
+                }
+        };
+
+        Assert.assertEquals(-45, Movement.evaluateBoard(board, Pion.colors.white.getValue()));
+    }
+
+    @Test
     public void generateAllPossibleMoves() {
+        board = new int[][]{
+                { // X1
+                        0,4,4,4,4,0,0,0
+                },
+                { //X2
+                        2,0,0,0,0,0,0,2
+                },
+                { //X3
+                        2,0,0,0,4,2,0,0
+                },
+                { //X4
+                        0,0,2,4,0,4,0,0
+                },
+                { //X5
+                        2,0,2,0,2,0,0,0
+                },
+                { //X6
+                        2,0,0,0,4,0,0,2
+                },
+                {  //X7
+                        4,0,0,0,0,0,0,0
+                },
+                { //X8
+                        0,0,4,0,4,4,2,0
+                }
+        };
+
         ArrayList<String> allPossibleMoves = Movement.generateAllPossibleMoves(board, Pion.colors.white.getValue());
         Iterator<String> iterator = allPossibleMoves.iterator();
 

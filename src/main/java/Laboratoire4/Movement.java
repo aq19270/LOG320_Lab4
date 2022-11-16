@@ -9,15 +9,15 @@ public class Movement {
      * https://dke.maastrichtuniversity.nl/m.winands/documents/informed_search.pdf P.22
      */
     final static int[][] WEIGHT_MATRIX = {
-      /*      0     1       2       3       4       5       6       7  */
-      /*0*/ {-80,   -25,    -20,    -20,    -20,    -20,    -25,    -80},
-      /*1*/ {-25,   10,     10,     10,     10,     10,     10,     -25},
-      /*2*/ {-20,   10,     25,     25,     25,     25,     10,     -20},
-      /*3*/ {-20,   10,     25,     50,     50,     25,     10,     -20},
-      /*4*/ {-20,   10,     25,     50,     50,     25,     10,     -20},
-      /*5*/ {-20,   10,     25,     25,     25,     25,     10,     -20},
-      /*6*/ {-25,   10,     10,     10,     10,     10,     10,     -25},
-      /*7*/ {-80,   -25,    -20,    -20,    -20,    -20,    -25,    -80},
+      /*      1     2       3       4       5       6       7       8  */
+      /*A*/ {-80,   -25,    -20,    -20,    -20,    -20,    -25,    -80},
+      /*B*/ {-25,   10,     10,     10,     10,     10,     10,     -25},
+      /*C*/ {-20,   10,     25,     25,     25,     25,     10,     -20},
+      /*D*/ {-20,   10,     25,     50,     50,     25,     10,     -20},
+      /*E*/ {-20,   10,     25,     50,     50,     25,     10,     -20},
+      /*F*/ {-20,   10,     25,     25,     25,     25,     10,     -20},
+      /*G*/ {-25,   10,     10,     10,     10,     10,     10,     -25},
+      /*H*/ {-80,   -25,    -20,    -20,    -20,    -20,    -25,    -80},
     };
 
     public static int evaluateBoard(int[][] board, int playerColor) {
@@ -28,9 +28,8 @@ public class Movement {
         int playerScore = 0;
         int enemyScore = 0;
 
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                System.out.println("x: " + x + " y: "  + y);
+        for (int x = 0; x <= 7; x++) {
+            for (int y = 0; y <= 7; y++) {
 
                 // Empty case
                 if(board[x][y] == 0) {
@@ -52,7 +51,6 @@ public class Movement {
 
     public static ArrayList<String> generateAllPossibleMoves(int[][] board, int playerColor) {
         ArrayList<String> possibleMoves = new ArrayList<>();
-        System.out.println(playerColor);
 
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
@@ -109,13 +107,21 @@ public class Movement {
         ArrayList<String> possibleMoves = new ArrayList<>();
         String currentPos = getStringFromPos(pion.getX(), pion.getY());
 
-        if(leftXMovement > 0 && (nearestLeftEnemyPionPos == Integer.MIN_VALUE || leftXMovement <= nearestLeftEnemyPionPos)) {
+        if(
+                leftXMovement > 0
+                    && (nearestLeftEnemyPionPos == Integer.MIN_VALUE || leftXMovement >= nearestLeftEnemyPionPos)
+                    && (board[leftXMovement][pion.getY()] != playerColor)
+        ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(leftXMovement, pion.getY())
             );
         }
 
-        if(rightXMovement < 8 && (nearestRightEnemyPionPos == Integer.MAX_VALUE || rightXMovement >= nearestRightEnemyPionPos)) {
+        if(
+                rightXMovement < 8
+                    && (nearestRightEnemyPionPos == Integer.MAX_VALUE || rightXMovement <= nearestRightEnemyPionPos)
+                    && (board[rightXMovement][pion.getY()] != playerColor)
+        ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(rightXMovement, pion.getY())
             );
@@ -160,13 +166,21 @@ public class Movement {
         ArrayList<String> possibleMoves = new ArrayList<>();
         String currentPos = getStringFromPos(pion.getX(), pion.getY());
 
-        if(downMovement >= 0 && (nearestDownEnemyPionPos == Integer.MIN_VALUE || downMovement <= nearestDownEnemyPionPos)) {
+        if(
+                downMovement >= 0
+                    && (nearestDownEnemyPionPos == Integer.MIN_VALUE || downMovement >= nearestDownEnemyPionPos)
+                    && (board[pion.getX()][downMovement] != playerColor)
+        ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(pion.getX(), downMovement)
             );
         }
 
-        if(upMovement <= 7 && (nearestUpEnemyPionPos == Integer.MAX_VALUE || upMovement >= nearestUpEnemyPionPos)) {
+        if(
+                upMovement <= 7
+                    && (nearestUpEnemyPionPos == Integer.MAX_VALUE || upMovement <= nearestUpEnemyPionPos)
+                    && (board[pion.getX()][upMovement] != playerColor)
+        ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(pion.getX(), upMovement)
             );
@@ -218,13 +232,22 @@ public class Movement {
         ArrayList<String> possibleMoves = new ArrayList<>();
         String currentPos = getStringFromPos(pion.getX(), pion.getY());
 
-        if(TopLeftPos[0] >= 0 && TopLeftPos[1] <= 7 && (distance <= nearestTopLeftPionInc)) {
+        if(
+                TopLeftPos[0] >= 0
+                        && TopLeftPos[1] <= 7 && (distance <= nearestTopLeftPionInc)
+                        && (board[TopLeftPos[0]][TopLeftPos[1]] != playerColor)
+        ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(TopLeftPos[0], TopLeftPos[1])
             );
         }
 
-        if(BottomRightPos[0] <= 7 && BottomRightPos[1] >= 0 && distance <= nearestDownRightPionInc) {
+        if(
+                BottomRightPos[0] <= 7
+                        && BottomRightPos[1] >= 0
+                        && distance <= nearestDownRightPionInc
+                        && (board[BottomRightPos[0]][BottomRightPos[1]] != playerColor)
+        ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(BottomRightPos[0], BottomRightPos[1])
             );
@@ -276,13 +299,23 @@ public class Movement {
         ArrayList<String> possibleMoves = new ArrayList<>();
         String currentPos = getStringFromPos(pion.getX(), pion.getY());
 
-        if(DownLeftPos[0] >= 0 && DownLeftPos[1] >= 0 && distance <= nearestDownLeftPionInc) {
+        if(
+                DownLeftPos[0] >= 0
+                        && DownLeftPos[1] >= 0
+                        && distance <= nearestDownLeftPionInc
+                        && (board[DownLeftPos[0]][DownLeftPos[1]] != playerColor)
+        ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(DownLeftPos[0], DownLeftPos[1])
             );
         }
 
-        if(TopRightPos[0] <= 7 && TopRightPos[1] <= 7 && distance <= nearestTopRightPionInc) {
+        if(
+                TopRightPos[0] <= 7
+                        && TopRightPos[1] <= 7
+                        && distance <= nearestTopRightPionInc
+                        && (board[TopRightPos[0]][TopRightPos[1]] != playerColor)
+        ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(TopRightPos[0], TopRightPos[1])
             );

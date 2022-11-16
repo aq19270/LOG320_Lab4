@@ -1,6 +1,6 @@
 import java.io.*;
 import java.net.*;
-
+import Laboratoire4.Movement;
 
 class Client {
     public static void main(String[] args) {
@@ -16,6 +16,7 @@ class Client {
             input = new BufferedInputStream(MyClient.getInputStream());
             output = new BufferedOutputStream(MyClient.getOutputStream());
             BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+
             while (true) {
                 char cmd = 0;
 
@@ -24,7 +25,9 @@ class Client {
 
                 switch (cmd) {
                     // Debut de la partie en joueur blanc
-                    case '1' -> board = handleNewGameWhite(input, output, console, board);
+                    case '1' -> {
+                        board = handleNewGameWhite(input, output, console, board);
+                    }
 
                     // Debut de la partie en joueur Noir
                     case '2' -> board = handleNewGameBlack(input, output, console, board);

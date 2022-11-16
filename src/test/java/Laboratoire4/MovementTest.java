@@ -71,7 +71,7 @@ public class MovementTest {
                 }
         };
 
-        Assert.assertEquals(-45, Movement.evaluateBoard(board, Pion.colors.white.getValue()));
+        Assert.assertEquals(-15, Movement.evaluateBoard(board, Pion.colors.white.getValue()));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class MovementTest {
 
     @Test
     public void getStringFromPos() {
-        Assert.assertEquals("D4", Movement.getStringFromPos(3,4));
+        Assert.assertEquals("D5", Movement.getStringFromPos(3,4));
     }
 
     @Test

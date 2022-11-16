@@ -1,6 +1,6 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 import Laboratoire4.Movement;
 import Laboratoire4.Pion;
@@ -50,7 +50,9 @@ class Client {
                     // Le serveur demande le prochain coup
                     // Le message contient aussi le dernier coup joue.
                     case '3' -> {
-                        String move = handleServerRequestUpdate(input, output, console);
+                        String move = handleServerRequestUpdate(input, output, console, board, playerColor.getValue());
+//                        int[][] board2 = board.clone();
+//                        String move = Minmax.alphabeta(board2, 4, playerColor.getValue());
                         // Ici on assume que notre coup sera toujours valide puisque la fonction a été valider
                         int[] initPos = Movement.getPosFromString(move.substring(0, 2));
                         int startIndex = 2;
@@ -59,8 +61,8 @@ class Client {
                         }
                         int[] nextPos = Movement.getPosFromString(move.substring(startIndex));
 
-                        board[initPos[0]][initPos[1]] = 0;
-                        board[nextPos[0]][nextPos[1]] = playerColor.getValue();
+                        board[initPos[0]][initPos[1] - 1] = 0;
+                        board[nextPos[0]][nextPos[1] - 1] = playerColor.getValue();
                     }
 
                     // Le dernier coup est invalide
@@ -134,7 +136,7 @@ class Client {
     }
 
     private static String handleServerRequestUpdate(BufferedInputStream input, BufferedOutputStream output,
-            BufferedReader console) throws IOException {
+            BufferedReader console, int[][] board, int playerColor) throws IOException {
         byte[] aBuffer = new byte[16];
 
         int size = input.available();
@@ -142,25 +144,27 @@ class Client {
         input.read(aBuffer, 0, size);
 
         String s = new String(aBuffer);
+        //update board
+        s = s.trim().replace(" ", "").replace("-", "");
+        int[] start, end;
+        start = Movement.getPosFromString(s.substring(0, 2));
+        end = Movement.getPosFromString(s.substring(2));
+        board[start[0]][start[1] - 1] = 0;
+        board[end[0]][end[1] - 1] = playerColor == Pion.colors.black.getValue() ? Pion.colors.white.getValue() : Pion.colors.black.getValue();
         System.out.println("Dernier coup :" + s);
         System.out.println("Entrez votre coup : ");
-        String move = null;
-        // String bestMove = "";
-        // double bestScore = Double.MIN_VALUE;
-        // String[] possibleMove = availableMove(board);
-        // for (int i=0;i<possibleMove.length;i++){
-        // Faire le move i sur le board
-        // score = Calculer le MinMax(board,3,false)
-        // Undo le move i sur le board
-        // if (score>bestScore){
-        // bestScore = score;
-        // bestMove = possibleMove(i)
-        // }
-        // }
-        move = console.readLine();
-        output.write(move.getBytes(), 0, move.length());
+        int[][] boardCopy = new int[board.length][];
+        for (int i = 0; i < boardCopy.length; i++) {
+            boardCopy[i] = Arrays.copyOf(board[i], board[i].length);
+        }
+        String move = Minmax.alphabeta(boardCopy, 4, playerColor);
+//        move = console.readLine();
+        String m = move.substring(0, 2) + " " + move.substring(2);
+//        output.write(move.getBytes(), 0, move.length());
+        output.write(m.getBytes(), 0, m.length());
         output.flush();
-        return move;
+        return m;
+//        return move;
     }
 
     private static void handleLastMoveInvalid(BufferedInputStream input, BufferedOutputStream output,

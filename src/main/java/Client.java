@@ -169,7 +169,7 @@ class Client {
         for (int i = 0; i < boardCopy.length; i++) {
             boardCopy[i] = Arrays.copyOf(board[i], board[i].length);
         }
-        String move = Minmax.alphabeta(boardCopy, 10, playerColor);
+        String move = Minmax.alphabeta(boardCopy, 4, playerColor);
         // move = console.readLine();
         String m = move.substring(0, 2) + " " + move.substring(2);
         // output.write(move.getBytes(), 0, move.length());

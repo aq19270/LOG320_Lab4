@@ -43,10 +43,11 @@ public class Minmax {
             }
             return bestScore;
         } else {
+            int oppositeColor = playerColor == Pion.colors.black.getValue() ? Pion.colors.white.getValue() : Pion.colors.black.getValue();
             double worstScore = Double.POSITIVE_INFINITY;
-            ArrayList<String> possibleMoves = Movement.generateAllPossibleMoves(board, playerColor == Pion.colors.black.getValue() ? Pion.colors.white.getValue() : Pion.colors.black.getValue());
+            ArrayList<String> possibleMoves = Movement.generateAllPossibleMoves(board, oppositeColor);
             for (String move : possibleMoves) {
-                score = minmax(executeMove(move, playerColor, board),depth - 1,true, playerColor, alpha, beta);
+                score = minmax(executeMove(move, oppositeColor, board),depth - 1,true, playerColor, alpha, beta);
                 worstScore = Math.min(worstScore, score);
                 beta = Math.min(beta, score);
                 if (beta <= alpha) {

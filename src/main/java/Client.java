@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import Laboratoire4.Movement;
+import Laboratoire4.Minmax;
 
 class Client {
     public static void main(String[] args) {
@@ -49,11 +50,12 @@ class Client {
 
     }
 
-    private static int[][] handleNewGameWhite(BufferedInputStream input, BufferedOutputStream output, BufferedReader console, int[][] board) throws IOException {
+    private static int[][] handleNewGameWhite(BufferedInputStream input, BufferedOutputStream output,
+            BufferedReader console, int[][] board) throws IOException {
         byte[] aBuffer = new byte[1024];
 
         int size = input.available();
-        //System.out.println("size " + size);
+        // System.out.println("size " + size);
         input.read(aBuffer, 0, size);
         String s = new String(aBuffer).trim();
         System.out.println(s);
@@ -78,12 +80,13 @@ class Client {
         return board;
     }
 
-    private static int[][] handleNewGameBlack(BufferedInputStream input, BufferedOutputStream output, BufferedReader console, int[][] board) throws IOException {
+    private static int[][] handleNewGameBlack(BufferedInputStream input, BufferedOutputStream output,
+            BufferedReader console, int[][] board) throws IOException {
         System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des blancs");
         byte[] aBuffer = new byte[1024];
 
         int size = input.available();
-        //System.out.println("size " + size);
+        // System.out.println("size " + size);
         input.read(aBuffer, 0, size);
         String s = new String(aBuffer).trim();
         System.out.println(s);
@@ -103,7 +106,8 @@ class Client {
         return board;
     }
 
-    private static void handleServerRequestUpdate(BufferedInputStream input, BufferedOutputStream output, BufferedReader console) throws IOException {
+    private static void handleServerRequestUpdate(BufferedInputStream input, BufferedOutputStream output,
+            BufferedReader console) throws IOException {
         byte[] aBuffer = new byte[16];
 
         int size = input.available();
@@ -114,12 +118,25 @@ class Client {
         System.out.println("Dernier coup :" + s);
         System.out.println("Entrez votre coup : ");
         String move = null;
+        // String bestMove = "";
+        // double bestScore = -1000000000;
+        // String[] possibleMove = availableMove(board);
+        // for (int i=0;i<possibleMove.length;i++){
+        // Faire le move i sur le board
+        // score = Calculer le MinMax(board,3,false)
+        // Undo le move i sur le board
+        // if (score>bestScore){
+        // bestScore = score;
+        // bestMove = possibleMove(i)
+        // }
+        // }
         move = console.readLine();
         output.write(move.getBytes(), 0, move.length());
         output.flush();
     }
 
-    private static void handleLastMoveInvalid(BufferedInputStream input, BufferedOutputStream output, BufferedReader console) throws IOException {
+    private static void handleLastMoveInvalid(BufferedInputStream input, BufferedOutputStream output,
+            BufferedReader console) throws IOException {
         System.out.println("Coup invalide, entrez un nouveau coup : ");
         String move = null;
         move = console.readLine();
@@ -127,7 +144,8 @@ class Client {
         output.flush();
     }
 
-    private static void handleGameOver(BufferedInputStream input, BufferedOutputStream output, BufferedReader console) throws IOException {
+    private static void handleGameOver(BufferedInputStream input, BufferedOutputStream output, BufferedReader console)
+            throws IOException {
         byte[] aBuffer = new byte[16];
         int size = input.available();
         input.read(aBuffer, 0, size);
@@ -143,7 +161,7 @@ class Client {
         System.out.println("―――――――――――――――――――――――――――――――――――――");
         System.out.println(" \t  A   B   C   D   E   F   G   H  ");
         StringBuilder nextRowString = new StringBuilder();
-        for (int y = 7; y >= 0 ; y--) {
+        for (int y = 7; y >= 0; y--) {
             nextRowString.append(y + 1).append("\t|");
             for (int x = 0; x < 8; x++) {
                 nextRowString.append(" ").append(board[x][y]).append(" |");
@@ -154,4 +172,3 @@ class Client {
         System.out.println("―――――――――――――――――――――――――――――――――――――");
     }
 }
-

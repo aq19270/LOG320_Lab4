@@ -6,12 +6,12 @@ public class Pion {
         black(2),
         white(4);
 
-        private Integer value;
-        private colors(Integer val) {
+        private int value;
+        private colors(int val) {
             value = val;
         }
 
-        public Integer getValue() {
+        public int getValue() {
             return value;
         }
     }

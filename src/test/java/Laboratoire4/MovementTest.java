@@ -4,9 +4,63 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class MovementTest {
+    int[][] board;
+
     @Before
-    public void init() {}
+    public void init() {
+        board = new int[][]{
+                { // X1
+                        0,4,4,4,4,4,4,0
+                },
+                { //X2
+                        2,0,0,0,0,0,0,2
+                },
+                { //X3
+                        2,0,0,0,0,0,0,2
+                },
+                { //X4
+                        2,0,0,0,0,0,0,2
+                },
+                { //X5
+                        2,0,0,0,0,0,0,2
+                },
+                { //X6
+                        2,0,0,0,0,0,0,2
+                },
+                {  //X7
+                        2,0,0,0,0,0,0,2
+                },
+                { //X8
+                        0,4,4,4,4,4,4,0
+                }
+        };
+    }
+
+    @Test
+    public void generateAllPossibleMoves() {
+        ArrayList<String> allPossibleMoves = Movement.generateAllPossibleMoves(board, Pion.colors.white.getValue());
+        Iterator<String> iterator = allPossibleMoves.iterator();
+
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
+        }
+
+        Assert.assertTrue(true);
+    }
+
+    @Test
+    public void getStringFromPos() {
+        Assert.assertEquals("D4", Movement.getStringFromPos(3,4));
+    }
+
+    @Test
+    public void getPosFromString() {
+        Assert.assertArrayEquals(new int[]{3,4}, Movement.getPosFromString("D4"));
+    }
 
     @Test
     public void TestValidMovementsWhite(){

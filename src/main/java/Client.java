@@ -52,12 +52,12 @@ class Client {
                     case '3' -> {
                         String move = handleServerRequestUpdate(input, output, console);
                         // Ici on assume que notre coup sera toujours valide puisque la fonction a été valider
-                        int[] initPos = getPosFromString(move.substring(0, 2));
+                        int[] initPos = Movement.getPosFromString(move.substring(0, 2));
                         int startIndex = 2;
                         if(move.length() == 5) {
                             startIndex = 3;
                         }
-                        int[] nextPos = getPosFromString(move.substring(startIndex));
+                        int[] nextPos = Movement.getPosFromString(move.substring(startIndex));
 
                         board[initPos[0]][initPos[1]] = 0;
                         board[nextPos[0]][nextPos[1]] = playerColor.getValue();
@@ -237,13 +237,4 @@ class Client {
 //
 //        return Pions;
 //    }
-
-    public static int[] getPosFromString(String pos) {
-        // 65 est la valeur de A qui est notre index 0. 65 - 65 donnerait la case 0;
-        final int VALUE_OF_A_IN_ASCII = 65;
-
-        int x = ((int) pos.charAt(0)) - VALUE_OF_A_IN_ASCII;
-        int y = (int) pos.charAt(1);
-        return new int[]{x, y};
-    }
 }

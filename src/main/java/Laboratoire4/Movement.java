@@ -160,13 +160,13 @@ public class Movement {
         ArrayList<String> possibleMoves = new ArrayList<>();
         String currentPos = getStringFromPos(pion.getX(), pion.getY());
 
-        if(downMovement > 0 && (nearestDownEnemyPionPos == Integer.MIN_VALUE || downMovement <= nearestDownEnemyPionPos)) {
+        if(downMovement >= 0 && (nearestDownEnemyPionPos == Integer.MIN_VALUE || downMovement <= nearestDownEnemyPionPos)) {
             possibleMoves.add(
                     currentPos + getStringFromPos(pion.getX(), downMovement)
             );
         }
 
-        if(upMovement < 8 && (nearestUpEnemyPionPos == Integer.MAX_VALUE || upMovement >= nearestUpEnemyPionPos)) {
+        if(upMovement <= 7 && (nearestUpEnemyPionPos == Integer.MAX_VALUE || upMovement >= nearestUpEnemyPionPos)) {
             possibleMoves.add(
                     currentPos + getStringFromPos(pion.getX(), upMovement)
             );
@@ -188,7 +188,7 @@ public class Movement {
                 continue;
             }
 
-            if(board[pion.getX() - increment][pion.getY() + increment] != playerColor && increment < nearestDownRightPionInc) {
+            if(board[pion.getX() - increment][pion.getY() + increment] != playerColor && increment < nearestTopLeftPionInc) {
                 nearestTopLeftPionInc = increment;
             }
 
@@ -218,7 +218,7 @@ public class Movement {
         ArrayList<String> possibleMoves = new ArrayList<>();
         String currentPos = getStringFromPos(pion.getX(), pion.getY());
 
-        if(TopLeftPos[0] >= 0 && TopLeftPos[1] <= 7 && distance <= nearestTopLeftPionInc) {
+        if(TopLeftPos[0] >= 0 && TopLeftPos[1] <= 7 && (distance <= nearestTopLeftPionInc)) {
             possibleMoves.add(
                     currentPos + getStringFromPos(TopLeftPos[0], TopLeftPos[1])
             );
@@ -282,7 +282,7 @@ public class Movement {
             );
         }
 
-        if(DownLeftPos[0] <= 7 && DownLeftPos[1] <= 7 && distance <= nearestTopRightPionInc) {
+        if(TopRightPos[0] <= 7 && TopRightPos[1] <= 7 && distance <= nearestTopRightPionInc) {
             possibleMoves.add(
                     currentPos + getStringFromPos(TopRightPos[0], TopRightPos[1])
             );

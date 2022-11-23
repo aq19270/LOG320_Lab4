@@ -1,6 +1,6 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 import Laboratoire4.Movement;
 import Laboratoire4.Pion;
@@ -20,8 +20,8 @@ class Client {
             BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
             int[][] board = new int[8][8];
-//            ArrayList<Pion> pionsBlanc = new ArrayList<>();
-//            ArrayList<Pion> pionsNoir = new ArrayList<>();
+            // ArrayList<Pion> pionsBlanc = new ArrayList<>();
+            // ArrayList<Pion> pionsNoir = new ArrayList<>();
             Pion.colors playerColor = Pion.colors.none;
 
             while (true) {
@@ -33,16 +33,16 @@ class Client {
                 switch (cmd) {
                     // Debut de la partie en joueur blanc
                     case '1' -> {
-//                        pionsBlanc = getInitialWhitePion();
-//                        pionsNoir = getInitialBlackPion();
+                        // pionsBlanc = getInitialWhitePion();
+                        // pionsNoir = getInitialBlackPion();
                         playerColor = Pion.colors.white;
-                        board = handleNewGameWhite(input, output, console, board);
+                        board = handleNewGameWhite(input, output, console, board, playerColor.getValue());
                     }
 
                     // Debut de la partie en joueur Noir
                     case '2' -> {
-//                        pionsBlanc = getInitialWhitePion();
-//                        pionsNoir = getInitialBlackPion();
+                        // pionsBlanc = getInitialWhitePion();
+                        // pionsNoir = getInitialBlackPion();
                         playerColor = Pion.colors.black;
                         board = handleNewGameBlack(input, output, console, board);
                     }
@@ -50,17 +50,20 @@ class Client {
                     // Le serveur demande le prochain coup
                     // Le message contient aussi le dernier coup joue.
                     case '3' -> {
-                        String move = handleServerRequestUpdate(input, output, console);
-                        // Ici on assume que notre coup sera toujours valide puisque la fonction a été valider
+                        String move = handleServerRequestUpdate(input, output, console, board, playerColor.getValue());
+                        // int[][] board2 = board.clone();
+                        // String move = Minmax.alphabeta(board2, 4, playerColor.getValue());
+                        // Ici on assume que notre coup sera toujours valide puisque la fonction a été
+                        // valider
                         int[] initPos = Movement.getPosFromString(move.substring(0, 2));
                         int startIndex = 2;
-                        if(move.length() == 5) {
+                        if (move.length() == 5) {
                             startIndex = 3;
                         }
                         int[] nextPos = Movement.getPosFromString(move.substring(startIndex));
 
-                        board[initPos[0]][initPos[1]] = 0;
-                        board[nextPos[0]][nextPos[1]] = playerColor.getValue();
+                        board[initPos[0]][initPos[1] - 1] = 0;
+                        board[nextPos[0]][nextPos[1] - 1] = playerColor.getValue();
                     }
 
                     // Le dernier coup est invalide
@@ -77,7 +80,7 @@ class Client {
     }
 
     private static int[][] handleNewGameWhite(BufferedInputStream input, BufferedOutputStream output,
-            BufferedReader console, int[][] board) throws IOException {
+            BufferedReader console, int[][] board, int playerColor) throws IOException {
         byte[] aBuffer = new byte[1024];
 
         int size = input.available();
@@ -97,12 +100,22 @@ class Client {
                 y++;
             }
         }
-
         printBoardInConsole(board);
+        int[][] boardCopy = new int[board.length][];
+        for (int i = 0; i < boardCopy.length; i++) {
+            boardCopy[i] = Arrays.copyOf(board[i], board[i].length);
+        }
         System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
-        String move = null;
-        move = console.readLine();
-        output.write(move.getBytes(), 0, move.length());
+        String move = Minmax.alphabeta(boardCopy, 4, playerColor);
+        // move = console.readLine();
+        String m = move.substring(0, 2) + " " + move.substring(2);
+        int[] start, end;
+        start = Movement.getPosFromString(move.substring(0, 2));
+        end = Movement.getPosFromString(move.substring(2));
+        board[start[0]][start[1] - 1] = 0;
+        board[end[0]][end[1] - 1] = playerColor;
+        // output.write(move.getBytes(), 0, move.length());
+        output.write(m.getBytes(), 0, m.length());
         output.flush();
         return board;
     }
@@ -134,7 +147,7 @@ class Client {
     }
 
     private static String handleServerRequestUpdate(BufferedInputStream input, BufferedOutputStream output,
-            BufferedReader console) throws IOException {
+            BufferedReader console, int[][] board, int playerColor) throws IOException {
         byte[] aBuffer = new byte[16];
 
         int size = input.available();
@@ -142,25 +155,28 @@ class Client {
         input.read(aBuffer, 0, size);
 
         String s = new String(aBuffer);
+        // update board
+        s = s.trim().replace(" ", "").replace("-", "");
+        int[] start, end;
+        start = Movement.getPosFromString(s.substring(0, 2));
+        end = Movement.getPosFromString(s.substring(2));
+        board[start[0]][start[1] - 1] = 0;
+        board[end[0]][end[1] - 1] = playerColor == Pion.colors.black.getValue() ? Pion.colors.white.getValue()
+                : Pion.colors.black.getValue();
         System.out.println("Dernier coup :" + s);
         System.out.println("Entrez votre coup : ");
-        String move = null;
-        // String bestMove = "";
-        // double bestScore = Double.MIN_VALUE;
-        // String[] possibleMove = availableMove(board);
-        // for (int i=0;i<possibleMove.length;i++){
-        // Faire le move i sur le board
-        // score = Calculer le MinMax(board,3,false)
-        // Undo le move i sur le board
-        // if (score>bestScore){
-        // bestScore = score;
-        // bestMove = possibleMove(i)
-        // }
-        // }
-        move = console.readLine();
-        output.write(move.getBytes(), 0, move.length());
+        int[][] boardCopy = new int[board.length][];
+        for (int i = 0; i < boardCopy.length; i++) {
+            boardCopy[i] = Arrays.copyOf(board[i], board[i].length);
+        }
+        String move = Minmax.alphabeta(boardCopy, 4, playerColor);
+        // move = console.readLine();
+        String m = move.substring(0, 2) + " " + move.substring(2);
+        // output.write(move.getBytes(), 0, move.length());
+        output.write(m.getBytes(), 0, m.length());
         output.flush();
-        return move;
+        return m;
+        // return move;
     }
 
     private static void handleLastMoveInvalid(BufferedInputStream input, BufferedOutputStream output,
@@ -200,41 +216,41 @@ class Client {
         System.out.println("―――――――――――――――――――――――――――――――――――――");
     }
 
-//    public static ArrayList<Pion> getInitialWhitePion() {
-//        ArrayList<Pion> Pions = new ArrayList<Pion>();
-//
-//        Pions.add(new Pion(1, 2));
-//        Pions.add(new Pion(1, 3));
-//        Pions.add(new Pion(1, 4));
-//        Pions.add(new Pion(1, 5));
-//        Pions.add(new Pion(1, 6));
-//        Pions.add(new Pion(1, 7));
-//        Pions.add(new Pion(8, 2));
-//        Pions.add(new Pion(8, 3));
-//        Pions.add(new Pion(8, 4));
-//        Pions.add(new Pion(8, 5));
-//        Pions.add(new Pion(8, 6));
-//        Pions.add(new Pion(8, 7));
-//
-//        return Pions;
-//    }
-//
-//    public static ArrayList<Pion> getInitialBlackPion() {
-//        ArrayList<Pion> Pions = new ArrayList<Pion>();
-//
-//        Pions.add(new Pion(2, 1));
-//        Pions.add(new Pion(3, 1));
-//        Pions.add(new Pion(4, 1));
-//        Pions.add(new Pion(5, 1));
-//        Pions.add(new Pion(6, 1));
-//        Pions.add(new Pion(7, 1));
-//        Pions.add(new Pion(2, 8));
-//        Pions.add(new Pion(3, 8));
-//        Pions.add(new Pion(4, 8));
-//        Pions.add(new Pion(5, 8));
-//        Pions.add(new Pion(6, 8));
-//        Pions.add(new Pion(7, 8));
-//
-//        return Pions;
-//    }
+    // public static ArrayList<Pion> getInitialWhitePion() {
+    // ArrayList<Pion> Pions = new ArrayList<Pion>();
+    //
+    // Pions.add(new Pion(1, 2));
+    // Pions.add(new Pion(1, 3));
+    // Pions.add(new Pion(1, 4));
+    // Pions.add(new Pion(1, 5));
+    // Pions.add(new Pion(1, 6));
+    // Pions.add(new Pion(1, 7));
+    // Pions.add(new Pion(8, 2));
+    // Pions.add(new Pion(8, 3));
+    // Pions.add(new Pion(8, 4));
+    // Pions.add(new Pion(8, 5));
+    // Pions.add(new Pion(8, 6));
+    // Pions.add(new Pion(8, 7));
+    //
+    // return Pions;
+    // }
+    //
+    // public static ArrayList<Pion> getInitialBlackPion() {
+    // ArrayList<Pion> Pions = new ArrayList<Pion>();
+    //
+    // Pions.add(new Pion(2, 1));
+    // Pions.add(new Pion(3, 1));
+    // Pions.add(new Pion(4, 1));
+    // Pions.add(new Pion(5, 1));
+    // Pions.add(new Pion(6, 1));
+    // Pions.add(new Pion(7, 1));
+    // Pions.add(new Pion(2, 8));
+    // Pions.add(new Pion(3, 8));
+    // Pions.add(new Pion(4, 8));
+    // Pions.add(new Pion(5, 8));
+    // Pions.add(new Pion(6, 8));
+    // Pions.add(new Pion(7, 8));
+    //
+    // return Pions;
+    // }
 }

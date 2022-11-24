@@ -20,11 +20,11 @@ public class Movement {
       /*H*/ {-80,   -25,    -20,    -20,    -20,    -20,    -25,    -80},
     };
 
-    public static int evaluateBoard(int[][] board, int playerColor) {
+    public static int evaluateBoard(Board board, int playerColor) {
         return naiveEvaluateBoard(board, playerColor);
     }
 
-    private static int naiveEvaluateBoard(int[][] board, int playerColor) {
+    private static int naiveEvaluateBoard(Board board, int playerColor) {
         int playerScore = 0;
         int enemyScore = 0;
 
@@ -32,12 +32,12 @@ public class Movement {
             for (int y = 0; y <= 7; y++) {
 
                 // Empty case
-                if(board[x][y] == 0) {
+                if(board.getCase(x, y).isEmpty()) {
                     continue;
                 }
 
                 // Our case
-                if(board[x][y] == playerColor) {
+                if(board.getCase(x, y).getPion().getColorValue() == playerColor) {
                     playerScore += WEIGHT_MATRIX[x][y];
                     continue;
                 }
@@ -49,20 +49,19 @@ public class Movement {
         return playerScore - enemyScore;
     }
 
-    public static ArrayList<String> generateAllPossibleMoves(int[][] board, int playerColor) {
+    public static ArrayList<String> generateAllPossibleMoves(Board board, int playerColor) {
         ArrayList<String> possibleMoves = new ArrayList<>();
 
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                if(board[x][y] == playerColor) {
-                    possibleMoves.addAll(generateAllMoveForPion(board, playerColor, new Pion(x,y)));
-                }
-            }
-        }
+        ArrayList<Pion> pions = (playerColor == Pion.colors.white.getValue()) ? board.getPionsBlanc() : board.getPionsNoir();
+
+        pions.forEach(pion -> {
+            possibleMoves.addAll(generateAllMoveForPion(board, playerColor, pion));
+        });
+
         return possibleMoves;
     }
 
-    private static ArrayList<String> generateAllMoveForPion(int[][] board, int playerColor, Pion pion) {
+    private static ArrayList<String> generateAllMoveForPion(Board board, int playerColor, Pion pion) {
         ArrayList<String> possibleMoves = new ArrayList<>();
         possibleMoves.addAll(getHorizontalMoves(board, playerColor, pion));
         possibleMoves.addAll(getVerticalMoves(board, playerColor, pion));
@@ -71,17 +70,17 @@ public class Movement {
         return possibleMoves;
     }
 
-    private static ArrayList<String> getHorizontalMoves(int[][] board, int playerColor, Pion pion){
+    private static ArrayList<String> getHorizontalMoves(Board board, int playerColor, Pion pion){
         int qtyPionInRow = 0;
         int nearestLeftEnemyPionPos = Integer.MIN_VALUE;
         int nearestRightEnemyPionPos = Integer.MAX_VALUE;
 
         for (int x = 0; x < pion.getX(); x++) {
-            if(board[x][pion.getY()] == 0) {
+            if(board.getCase(x, pion.getY()).isEmpty()) {
                 continue;
             }
 
-            if(board[x][pion.getY()] != playerColor) {
+            if(board.getCase(x, pion.getY()).getPion().getColorValue() != playerColor) {
                 nearestLeftEnemyPionPos = x;
             }
 
@@ -89,11 +88,11 @@ public class Movement {
         }
 
         for (int x = 7; x > pion.getX(); x--) {
-            if(board[x][pion.getY()] == 0) {
+            if(board.getCase(x, pion.getY()).isEmpty()) {
                 continue;
             }
 
-            if(board[x][pion.getY()] != playerColor) {
+            if(board.getCase(x, pion.getY()).getPion().getColorValue() != playerColor) {
                 nearestRightEnemyPionPos = x;
             }
 
@@ -110,7 +109,7 @@ public class Movement {
         if(
                 leftXMovement > 0
                     && (nearestLeftEnemyPionPos == Integer.MIN_VALUE || leftXMovement >= nearestLeftEnemyPionPos)
-                    && (board[leftXMovement][pion.getY()] != playerColor)
+                    && (board.getCase(leftXMovement,pion.getY()).isEmpty() || board.getCase(leftXMovement,pion.getY()).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(leftXMovement, pion.getY())
@@ -120,7 +119,7 @@ public class Movement {
         if(
                 rightXMovement < 8
                     && (nearestRightEnemyPionPos == Integer.MAX_VALUE || rightXMovement <= nearestRightEnemyPionPos)
-                    && (board[rightXMovement][pion.getY()] != playerColor)
+                    && (board.getCase(rightXMovement, pion.getY()).isEmpty() || board.getCase(rightXMovement, pion.getY()).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(rightXMovement, pion.getY())
@@ -129,18 +128,18 @@ public class Movement {
 
         return possibleMoves;
     }
-    private static ArrayList<String> getVerticalMoves(int[][] board, int playerColor, Pion pion){
+    private static ArrayList<String> getVerticalMoves(Board board, int playerColor, Pion pion){
         int qtyPionInCol = 0;
         // TOP of the board is 7 and bottom is 0
         int nearestUpEnemyPionPos = Integer.MAX_VALUE;
         int nearestDownEnemyPionPos = Integer.MIN_VALUE;
 
         for (int y = 0; y < pion.getY(); y++) {
-            if(board[pion.getX()][y] == 0) {
+            if(board.getCase(pion.getX(), y).isEmpty()) {
                 continue;
             }
 
-            if(board[pion.getX()][y] != playerColor) {
+            if(board.getCase(pion.getX(), y).getPion().getColorValue() != playerColor) {
                 nearestDownEnemyPionPos = y;
             }
 
@@ -148,11 +147,11 @@ public class Movement {
         }
 
         for (int y = 7; y > pion.getY(); y--) {
-            if(board[pion.getX()][y] == 0) {
+            if(board.getCase(pion.getX(), y).isEmpty()) {
                 continue;
             }
 
-            if(board[pion.getX()][y] != playerColor) {
+            if(board.getCase(pion.getX(), y).getPion().getColorValue() != playerColor) {
                 nearestUpEnemyPionPos = y;
             }
 
@@ -169,7 +168,7 @@ public class Movement {
         if(
                 downMovement >= 0
                     && (nearestDownEnemyPionPos == Integer.MIN_VALUE || downMovement >= nearestDownEnemyPionPos)
-                    && (board[pion.getX()][downMovement] != playerColor)
+                    && (board.getCase(pion.getX(), downMovement).isEmpty() || board.getCase(pion.getX(), downMovement).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(pion.getX(), downMovement)
@@ -179,7 +178,7 @@ public class Movement {
         if(
                 upMovement <= 7
                     && (nearestUpEnemyPionPos == Integer.MAX_VALUE || upMovement <= nearestUpEnemyPionPos)
-                    && (board[pion.getX()][upMovement] != playerColor)
+                    && (board.getCase(pion.getX(), upMovement).isEmpty() || board.getCase(pion.getX(), upMovement).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(pion.getX(), upMovement)
@@ -188,7 +187,7 @@ public class Movement {
 
         return possibleMoves;
     }
-    private static ArrayList<String> getLeftDiagMoves(int[][] board, int playerColor, Pion pion){
+    private static ArrayList<String> getLeftDiagMoves(Board board, int playerColor, Pion pion){
         int qtyPionInDiag = 0;
         // TOP of the board is 7 and bottom is 0
         int nearestTopLeftPionInc = Integer.MAX_VALUE;
@@ -197,12 +196,15 @@ public class Movement {
         int increment = 1;
 
         while(pion.getX() - increment >= 0 && pion.getY() + increment <= 7) {
-            if(board[pion.getX() - increment][pion.getY() + increment] == 0) {
+            if(board.getCase(pion.getX() - increment, pion.getY() + increment).isEmpty()) {
                 increment++;
                 continue;
             }
 
-            if(board[pion.getX() - increment][pion.getY() + increment] != playerColor && increment < nearestTopLeftPionInc) {
+            if(
+                    board.getCase(pion.getX() - increment, pion.getY() + increment).getPion().getColorValue() != playerColor
+                    && increment < nearestTopLeftPionInc
+            ) {
                 nearestTopLeftPionInc = increment;
             }
 
@@ -212,12 +214,15 @@ public class Movement {
 
         increment = 1;
         while(pion.getX() + increment <= 7 && pion.getY() - increment >= 0) {
-            if(board[pion.getX() + increment][pion.getY() - increment] == 0) {
+            if(board.getCase(pion.getX() + increment, pion.getY() - increment).isEmpty()) {
                 increment++;
                 continue;
             }
 
-            if(board[pion.getX() + increment][pion.getY() - increment] != playerColor && increment < nearestDownRightPionInc) {
+            if(
+                    board.getCase(pion.getX() + increment, pion.getY() - increment).getPion().getColorValue() != playerColor
+                            && increment < nearestDownRightPionInc
+            ) {
                 nearestDownRightPionInc = increment;
             }
 
@@ -235,7 +240,7 @@ public class Movement {
         if(
                 TopLeftPos[0] >= 0
                         && TopLeftPos[1] <= 7 && (distance <= nearestTopLeftPionInc)
-                        && (board[TopLeftPos[0]][TopLeftPos[1]] != playerColor)
+                        && (board.getCase(TopLeftPos[0], TopLeftPos[1]).isEmpty() || board.getCase(TopLeftPos[0], TopLeftPos[1]).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(TopLeftPos[0], TopLeftPos[1])
@@ -246,7 +251,7 @@ public class Movement {
                 BottomRightPos[0] <= 7
                         && BottomRightPos[1] >= 0
                         && distance <= nearestDownRightPionInc
-                        && (board[BottomRightPos[0]][BottomRightPos[1]] != playerColor)
+                        && (board.getCase(BottomRightPos[0], BottomRightPos[1]).isEmpty() || board.getCase(BottomRightPos[0], BottomRightPos[1]).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(BottomRightPos[0], BottomRightPos[1])
@@ -255,7 +260,7 @@ public class Movement {
 
         return possibleMoves;
     }
-    private static ArrayList<String> getRightDiagMoves(int[][] board, int playerColor, Pion pion){
+    private static ArrayList<String> getRightDiagMoves(Board board, int playerColor, Pion pion){
         int qtyPionInDiag = 0;
         // TOP of the board is 7 and bottom is 0
         int nearestTopRightPionInc = Integer.MAX_VALUE;
@@ -264,12 +269,15 @@ public class Movement {
         int increment = 1;
 
         while(pion.getX() - increment >= 0 && pion.getY() - increment >= 0) {
-            if(board[pion.getX() - increment][pion.getY() - increment] == 0) {
+            if(board.getCase(pion.getX() - increment, pion.getY() - increment).isEmpty()) {
                 increment++;
                 continue;
             }
 
-            if(board[pion.getX() - increment][pion.getY() - increment] != playerColor && increment < nearestDownLeftPionInc) {
+            if(
+                    board.getCase(pion.getX() - increment, pion.getY() - increment).getPion().getColorValue() != playerColor
+                    && increment < nearestDownLeftPionInc
+            ) {
                 nearestDownLeftPionInc = increment;
             }
 
@@ -279,12 +287,15 @@ public class Movement {
 
         increment = 1;
         while(pion.getX() + increment <= 7 && pion.getY() + increment <= 7) {
-            if(board[pion.getX() + increment][pion.getY() + increment] == 0) {
+            if(board.getCase(pion.getX() + increment, pion.getY() + increment).isEmpty()) {
                 increment++;
                 continue;
             }
 
-            if(board[pion.getX() + increment][pion.getY() + increment] != playerColor && increment < nearestTopRightPionInc) {
+            if(
+                    board.getCase(pion.getX() + increment, pion.getY() + increment).getPion().getColorValue() != playerColor
+                    && increment < nearestTopRightPionInc
+            ) {
                 nearestTopRightPionInc = increment;
             }
 
@@ -303,7 +314,7 @@ public class Movement {
                 DownLeftPos[0] >= 0
                         && DownLeftPos[1] >= 0
                         && distance <= nearestDownLeftPionInc
-                        && (board[DownLeftPos[0]][DownLeftPos[1]] != playerColor)
+                        && (board.getCase(DownLeftPos[0], DownLeftPos[1]).isEmpty() || board.getCase(DownLeftPos[0], DownLeftPos[1]).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(DownLeftPos[0], DownLeftPos[1])
@@ -314,7 +325,7 @@ public class Movement {
                 TopRightPos[0] <= 7
                         && TopRightPos[1] <= 7
                         && distance <= nearestTopRightPionInc
-                        && (board[TopRightPos[0]][TopRightPos[1]] != playerColor)
+                        && (board.getCase(TopRightPos[0], TopRightPos[1]).isEmpty() || board.getCase(TopRightPos[0], TopRightPos[1]).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(TopRightPos[0], TopRightPos[1])
@@ -342,6 +353,22 @@ public class Movement {
         int x = (int) pos.charAt(0) - VALUE_OF_A_IN_ASCII;
         int y = (int) pos.charAt(1) - VALUE_OF_0_IN_ASCII;
         return new int[]{x, y};
+    }
+
+    public static void executeMove(String move, Board board) {
+        int[] start = Movement.getPosFromString(move.substring(0, 2));
+        int[] end = Movement.getPosFromString(move.substring(2));
+
+        Case oldCase = board.getCase(start[0], start[1] - 1);
+        if(oldCase.isEmpty()) {
+           return;
+        }
+
+        Pion pion = oldCase.getPion();
+        pion.setX(end[0]);
+        pion.setY(end[1] - 1);
+        board.getCase(end[0], end[1] - 1).setPion(pion);
+        oldCase.emptyCase();
     }
 
     //    public static boolean ValidateMovement(int[][] board, colors color, String initPos, String finalPos) {

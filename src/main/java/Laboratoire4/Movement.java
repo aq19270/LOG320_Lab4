@@ -1,6 +1,7 @@
 package Laboratoire4;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Movement {
 
@@ -25,28 +26,20 @@ public class Movement {
     }
 
     private static int naiveEvaluateBoard(Board board, int playerColor) {
-        int playerScore = 0;
-        int enemyScore = 0;
+        AtomicInteger playerScore = new AtomicInteger();
+        AtomicInteger enemyScore = new AtomicInteger();
+        ArrayList<Pion> pionPlayer = (playerColor == Pion.colors.white.getValue() ? board.getPionsBlanc() : board.getPionsNoir());
+        ArrayList<Pion> pionEnemy = (playerColor == Pion.colors.white.getValue() ? board.getPionsNoir() : board.getPionsBlanc());
 
-        for (int x = 0; x <= 7; x++) {
-            for (int y = 0; y <= 7; y++) {
+        pionPlayer.forEach(pion -> {
+            playerScore.addAndGet(WEIGHT_MATRIX[pion.getX()][pion.getY()]);
+        });
 
-                // Empty case
-                if(board.getCase(x, y).isEmpty()) {
-                    continue;
-                }
+        pionEnemy.forEach(pion -> {
+            enemyScore.addAndGet(WEIGHT_MATRIX[pion.getX()][pion.getY()]);
+        });
 
-                // Our case
-                if(board.getCase(x, y).getPion().getColorValue() == playerColor) {
-                    playerScore += WEIGHT_MATRIX[x][y];
-                    continue;
-                }
-
-                enemyScore += WEIGHT_MATRIX[x][y];
-            }
-        }
-
-        return playerScore - enemyScore;
+        return playerScore.get() - enemyScore.get();
     }
 
     public static ArrayList<String> generateAllPossibleMoves(Board board, int playerColor) {
@@ -357,7 +350,7 @@ public class Movement {
 
     public static void executeMove(String move, Board board) {
         int[] start = Movement.getPosFromString(move.substring(0, 2));
-        int[] end = Movement.getPosFromString(move.substring(2));
+        int[] end = Movement.getPosFromString(move.substring(2, 4));
 
         Case oldCase = board.getCase(start[0], start[1] - 1);
         if(oldCase.isEmpty()) {

@@ -11,13 +11,14 @@ import Laboratoire4.Pion;
 import Laboratoire4.Minmax;
 
 class Client {
-    static Socket MyClient;
-    static BufferedInputStream input;
-    static BufferedOutputStream output;
     private static Board board = new Board(8, 8);
 
     public static void main(String[] args) {
-                try {
+        Socket MyClient;
+        BufferedInputStream input;
+        BufferedOutputStream output;
+
+        try {
             MyClient = new Socket("localhost", 8888);
 
             input = new BufferedInputStream(MyClient.getInputStream());
@@ -75,7 +76,7 @@ class Client {
     }
 
     private static void handleNewGameWhite(BufferedInputStream input, BufferedOutputStream output,
-            BufferedReader console, int playerColor) throws IOException {
+                                           BufferedReader console, int playerColor) throws IOException {
 
         byte[] aBuffer = new byte[1024];
 
@@ -83,31 +84,8 @@ class Client {
         // System.out.println("size " + size);
         input.read(aBuffer, 0, size);
         String s = new String(aBuffer).trim();
-        System.out.println(s);
-        String[] boardValues;
-        boardValues = s.split(" ");
-        int x = 0, y = 0;
-        for (int i = 0; i < boardValues.length; i++) {
-            Integer value = Integer.parseInt(boardValues[i]);
+        setupBoard(s);
 
-            if(value == Pion.colors.black.getValue()) {
-                Pion pion = new Pion(x, y, Pion.colors.black);
-                board.getCase(x, y).setPion(pion);
-                board.addPionNoir(pion);
-            }
-
-            if(value == Pion.colors.white.getValue()) {
-                Pion pion = new Pion(x, y, Pion.colors.white);
-                board.getCase(x, y).setPion(pion);
-                board.addPionBlanc(pion);
-            }
-
-            x++;
-            if (x == 8) {
-                x = 0;
-                y++;
-            }
-        }
 
         printBoardInConsole(board);
 
@@ -122,7 +100,7 @@ class Client {
     }
 
     private static void handleNewGameBlack(BufferedInputStream input, BufferedOutputStream output,
-            BufferedReader console, int playerColor) throws IOException {
+                                           BufferedReader console, int playerColor) throws IOException {
         System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des blancs");
         byte[] aBuffer = new byte[1024];
 
@@ -130,37 +108,9 @@ class Client {
         // System.out.println("size " + size);
         input.read(aBuffer, 0, size);
         String s = new String(aBuffer).trim();
-        System.out.println(s);
-        String[] boardValues;
-        boardValues = s.split(" ");
+        setupBoard(s);
+        printBoardInConsole(board);
 
-        int x = 0, y = 0;
-        for (int i = 0; i < boardValues.length; i++) {
-            Integer value = Integer.parseInt(boardValues[i]);
-
-            if(value == Pion.colors.black.getValue()) {
-                Pion pion = new Pion(x, y, Pion.colors.black);
-                board.getCase(x, y).setPion(pion);
-                board.addPionNoir(pion);
-            }
-
-            if(value == Pion.colors.white.getValue()) {
-                Pion pion = new Pion(x, y, Pion.colors.white);
-                board.getCase(x, y).setPion(pion);
-                board.addPionBlanc(pion);
-            }
-
-            x++;
-            if (x == 8) {
-                x = 0;
-                y++;
-            }
-        }
-
-        String dataToSend = executeNextMove(board, playerColor);
-
-        // output.write(move.getBytes(), 0, move.length());
-        output.write(dataToSend.getBytes(), 0, dataToSend.length());
         output.flush();
     }
 
@@ -191,7 +141,7 @@ class Client {
     }
 
     private static void handleLastMoveInvalid(BufferedInputStream input, BufferedOutputStream output,
-            BufferedReader console) throws IOException {
+                                              BufferedReader console) throws IOException {
         System.out.println("Coup invalide, entrez un nouveau coup : ");
         String move = null;
         move = console.readLine();
@@ -221,7 +171,7 @@ class Client {
             nextRowString.append(y + 1).append("\t|");
             for (int x = 0; x < 8; x++) {
                 int caseVal = 0;
-                if(!board.getCase(x, y).isEmpty()) {
+                if (!board.getCase(x, y).isEmpty()) {
                     caseVal = board.getCase(x, y).getPion().getColorValue();
                 }
 
@@ -234,26 +184,41 @@ class Client {
     }
 
     private static String executeNextMove(Board currentBoard, int playerColor) {
-        System.out.println("BOARD BEFORE CLONE");
-        printBoardInConsole(currentBoard);
-
         Board boardCopy = currentBoard.clone();
-
-        System.out.println("BOARD AFTER CLONE");
-        printBoardInConsole(currentBoard);
-        printBoardInConsole(boardCopy);
 
         String nextMove = Minmax.alphabeta(boardCopy, 4, playerColor);
         String dataToSend = nextMove.substring(0, 2) + " " + nextMove.substring(2);
 
-        System.out.println("BOARD BEFORE MOVE");
-        printBoardInConsole(currentBoard);
-
         Movement.executeMove(nextMove, currentBoard);
 
-        System.out.println("BOARD AFTER MOVE");
-        printBoardInConsole(currentBoard);
-
         return dataToSend;
+    }
+
+    private static void setupBoard(String s) {
+        System.out.println(s);
+        String[] boardValues;
+        boardValues = s.split(" ");
+        int x = 0, y = 0;
+        for (int i = 0; i < boardValues.length; i++) {
+            Integer value = Integer.parseInt(boardValues[i]);
+
+            if (value == Pion.colors.black.getValue()) {
+                Pion pion = new Pion(x, y, Pion.colors.black);
+                board.getCase(x, y).setPion(pion);
+                board.addPionNoir(pion);
+            }
+
+            if (value == Pion.colors.white.getValue()) {
+                Pion pion = new Pion(x, y, Pion.colors.white);
+                board.getCase(x, y).setPion(pion);
+                board.addPionBlanc(pion);
+            }
+
+            x++;
+            if (x == 8) {
+                x = 0;
+                y++;
+            }
+        }
     }
 }

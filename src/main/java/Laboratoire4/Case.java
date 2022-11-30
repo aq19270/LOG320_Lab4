@@ -2,7 +2,12 @@ package Laboratoire4;
 
 public class Case {
     private Pion currentPion = null;
-    public Case(Pion pion) {
+    private int x;
+    private int y;
+
+    public Case(int x, int y, Pion pion) {
+        this.x = x;
+        this.y = y;
         this.currentPion = pion;
     }
 
@@ -20,10 +25,12 @@ public class Case {
 
     public void setPion(Pion pion) {
         currentPion = pion;
+        pion.setX(this.x);
+        pion.setY(this.y);
     }
 
     public Case clone() {
-        Case newCase = new Case(null);
+        Case newCase = new Case(this.x, this.y, null);
 
         if (!this.isEmpty()) {
             newCase.setPion(this.currentPion.clone());

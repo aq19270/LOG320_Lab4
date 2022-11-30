@@ -13,7 +13,7 @@ public class Board {
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
-                board[x][y] = new Case(null);
+                board[x][y] = new Case(x, y, null);
             }
         }
     }

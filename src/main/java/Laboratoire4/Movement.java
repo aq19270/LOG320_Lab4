@@ -358,8 +358,6 @@ public class Movement {
         }
 
         Pion pion = oldCase.getPion();
-        pion.setX(end[0]);
-        pion.setY(end[1] - 1);
         board.getCase(end[0], end[1] - 1).setPion(pion);
         oldCase.emptyCase();
     }

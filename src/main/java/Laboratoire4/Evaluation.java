@@ -8,6 +8,13 @@ public class Evaluation {
     final static double MOBILITY_COEFFICIENT = 6;
     final static double CENTRALISATION_COEFFICIENT = 4;
 
+    //////////////////
+    // MOBILITY CONST
+    /////////////////
+    final static double CAPTURE_MODIFIER = 2.0;
+    final static double MOVE_VALUE = 1.0;
+    final static double EDGE_COEFFICIENT = 0.5;
+
     /**
      * TODO Il faut référencer proprement le code ici pour ne pas perdre de points
      * https://dke.maastrichtuniversity.nl/m.winands/documents/informed_search.pdf P.22
@@ -26,44 +33,48 @@ public class Evaluation {
 
 
     public static double evaluateBoard(Board board, int playerColor) {
-        return naiveEvaluateBoard(board, playerColor);
+        return naiveEvaluateBoard(board);
     }
 
-    private static double naiveEvaluateBoard(Board board, int playerColor) {
-        return (int) evaluateCentralisation(board, playerColor);
+    private static double naiveEvaluateBoard(Board board) {
+        return (int) evaluateCentralisation(board);
     }
 
-    private static double smartEvaluateBoard(Board board, int playerColor) {
+    private static double smartEvaluateBoard(Board board) {
         double playerScore = 0;
 
-        playerScore += evaluateMobility(board, playerColor) * MOBILITY_COEFFICIENT;
-        playerScore += evaluateCentralisation(board, playerColor) * CENTRALISATION_COEFFICIENT;
+        playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
+        playerScore += evaluateCentralisation(board) * CENTRALISATION_COEFFICIENT;
 
         return playerScore;
     }
 
-    public static double evaluateMobility(Board board, int playerColor) {
-        final double CAPTURE_MODIFIER = 2.0;
-        final double MOVE_VALUE = 1.0;
-        final double EDGE_COEFFICIENT = 0.5;
+    public static double evaluateMobility(Board board) {
+        ArrayList<String> allPlayerMove = Movement.generateAllPossibleMoves(board, board.getPlayerColor().getValue());
+        ArrayList<String> allEnnemyMove = Movement.generateAllPossibleMoves(board, board.getEnnemyColor().getValue());
 
-        ArrayList<String> allMoves = Movement.generateAllPossibleMoves(board, playerColor);
+        double maxPossibleValue = Math.max(allPlayerMove.size(), allEnnemyMove.size()) * CAPTURE_MODIFIER;
+        double playerMobilityValue = getMovesValue(board, allPlayerMove, board.getPlayerColor());
+        double ennemyMobilityValue = getMovesValue(board, allEnnemyMove, board.getEnnemyColor());
 
-        double mobilityValue = 0;
-        double maxPossibleValue = allMoves.size() * CAPTURE_MODIFIER;
 
+        return (playerMobilityValue - ennemyMobilityValue) / maxPossibleValue;
+    }
+
+    private static double getMovesValue(Board board, ArrayList<String> moves, Pion.colors color) {
         Case currentCase;
         int x, y;
         double moveValue;
+        double  mobilityValue = 0;
 
-        for(String move : allMoves) {
+        for(String move : moves) {
             moveValue = MOVE_VALUE;
             int[] position = Movement.getPosFromString(move.substring(2));
             x = position[0];
             y = position[1];
 
             currentCase = board.getCase(x, y);
-            if(!currentCase.isEmpty() && currentCase.getPion().getColorValue() != playerColor) {
+            if(!currentCase.isEmpty() && currentCase.getPion().getColor() != color) {
                 moveValue *= CAPTURE_MODIFIER;
             }
 
@@ -73,20 +84,24 @@ public class Evaluation {
 
             mobilityValue += moveValue;
         }
-        return mobilityValue / maxPossibleValue;
+        return mobilityValue;
     }
 
-    public static double evaluateCentralisation(Board board, int playerColor) {
+    public static double evaluateCentralisation(Board board) {
         AtomicInteger playerScore = new AtomicInteger();
-        ArrayList<Pion> pionPlayer = (playerColor == Pion.colors.white.getValue() ? board.getPionsBlanc() : board.getPionsNoir());
+        AtomicInteger ennemyScore = new AtomicInteger();
 
         final double MAX_POSSIBLE_VALUE = 4 * 50 + 8 * 25;
 
-        pionPlayer.forEach(pion -> {
+        board.getPlayerPions().forEach(pion -> {
             playerScore.addAndGet(WEIGHT_MATRIX[pion.getX()][pion.getY()]);
         });
 
-        return playerScore.get() / MAX_POSSIBLE_VALUE;
+        board.getEnnemyPions().forEach(pion -> {
+            ennemyScore.addAndGet(WEIGHT_MATRIX[pion.getX()][pion.getY()]);
+        });
+
+        return (playerScore.get() - ennemyScore.get()) / MAX_POSSIBLE_VALUE;
     }
 
 

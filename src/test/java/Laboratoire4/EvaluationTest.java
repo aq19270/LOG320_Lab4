@@ -12,6 +12,8 @@ public class EvaluationTest {
     @Before
     public void init() {
         board = new Board(8, 8);
+        board.setPlayerColor(Pion.colors.white);
+        board.setEnnemyColor(Pion.colors.black);
 
         int [][] tempBoard = {
                 { // X1
@@ -66,20 +68,20 @@ public class EvaluationTest {
 
     @Test
     public void evaluateCentralisation() {
-        Assert.assertEquals(-0.65, Evaluation.evaluateCentralisation(board, Pion.colors.white.getValue()), 0.001);
+        Assert.assertEquals(0, Evaluation.evaluateCentralisation(board), 0.001);
 
         updateBoard(board);
 
-        Assert.assertEquals(-0.1125, Evaluation.evaluateCentralisation(board, Pion.colors.white.getValue()), 0.001);
+        Assert.assertEquals(-0.0375, Evaluation.evaluateCentralisation(board), 0.001);
     }
 
     @Test
     public void evaluateMobility() {
-        Assert.assertEquals(0.472222222, Evaluation.evaluateMobility(board, Pion.colors.white.getValue()), 0.001);
+        Assert.assertEquals(0, Evaluation.evaluateMobility(board), 0.001);
 
         updateBoard(board);
 
-        Assert.assertEquals(0.49264705882352944, Evaluation.evaluateMobility(board, Pion.colors.white.getValue()), 0.001);
+        Assert.assertEquals(0.029411764705882353, Evaluation.evaluateMobility(board), 0.001);
     }
 
     private void updateBoard(Board board) {

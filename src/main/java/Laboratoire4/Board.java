@@ -6,6 +6,8 @@ public class Board {
     private Case[][] board;
     private ArrayList<Pion> pionsBlanc = new ArrayList<>();
     private ArrayList<Pion> pionsNoir = new ArrayList<>();
+    private Pion.colors playerColor;
+    private Pion.colors ennemyColor;
 
 
     public Board(int sizeX, int sizeY) {
@@ -48,6 +50,38 @@ public class Board {
 
     public ArrayList<Pion> getPionsNoir() {
         return this.pionsNoir;
+    }
+
+    public void setPlayerColor(Pion.colors playerColor) {
+        this.playerColor = playerColor;
+    }
+
+    public void setEnnemyColor(Pion.colors ennemyColor) {
+        this.ennemyColor = ennemyColor;
+    }
+
+    public ArrayList<Pion> getPlayerPions() {
+        if(this.playerColor == Pion.colors.white) {
+            return this.getPionsBlanc();
+        }
+
+        return this.getPionsNoir();
+    }
+
+    public ArrayList<Pion> getEnnemyPions() {
+        if(this.playerColor == Pion.colors.white) {
+            return this.getPionsNoir();
+        }
+
+        return this.getPionsBlanc();
+    }
+
+    public Pion.colors getEnnemyColor() {
+        return ennemyColor;
+    }
+
+    public Pion.colors getPlayerColor() {
+        return playerColor;
     }
 
     private boolean inBound(int val, int min, int max) {

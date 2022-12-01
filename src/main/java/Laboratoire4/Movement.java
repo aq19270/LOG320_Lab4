@@ -63,9 +63,9 @@ public class Movement {
         String currentPos = getStringFromPos(pion.getX(), pion.getY());
 
         if(
-                leftXMovement > 0
+                leftXMovement > -1
                     && (nearestLeftEnemyPionPos == Integer.MIN_VALUE || leftXMovement >= nearestLeftEnemyPionPos)
-                    && (board.getCase(leftXMovement,pion.getY()).isEmpty() || board.getCase(leftXMovement,pion.getY()).getPion().getColorValue() != playerColor)
+                    && (board.getCase(leftXMovement, pion.getY()).isEmpty() || board.getCase(leftXMovement, pion.getY()).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(leftXMovement, pion.getY())

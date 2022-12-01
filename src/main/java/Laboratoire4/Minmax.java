@@ -27,7 +27,7 @@ public class Minmax {
     }
     public static double minmax(Board board, int depth, Boolean isMaximizing, int playerColor, double alpha, double beta) {
         if (depth == 0) {
-            return Movement.evaluateBoard(board, playerColor);
+            return Evaluation.evaluateBoard(board, playerColor);
         }
         double score;
         if (isMaximizing) {

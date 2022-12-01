@@ -66,11 +66,11 @@ public class MovementTest {
 
     @Test
     public void evaluateBoard() {
-        Assert.assertEquals(0, Movement.evaluateBoard(board, Pion.colors.white.getValue()));
+        Assert.assertEquals(0, Evaluation.evaluateBoard(board, Pion.colors.white.getValue()));
 
         updateBoard(board);
 
-        Assert.assertEquals(-15, Movement.evaluateBoard(board, Pion.colors.white.getValue()));
+        Assert.assertEquals(-15, Evaluation.evaluateBoard(board, Pion.colors.white.getValue()));
     }
 
     @Test

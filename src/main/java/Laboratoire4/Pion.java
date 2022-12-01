@@ -1,6 +1,11 @@
 package Laboratoire4;
 
 public class Pion {
+
+    public Pion clone() {
+        return new Pion(x, y, color);
+    }
+
     public enum colors {
         none(0),
         black(2),
@@ -18,10 +23,12 @@ public class Pion {
 
     private int x;
     private int y;
+    private colors color;
 
-    public Pion(int x, int y) {
+    public Pion(int x, int y, colors color) {
         this.x = x;
         this.y = y;
+        this.color = color;
     }
 
     public int getX() {
@@ -38,5 +45,13 @@ public class Pion {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public colors getColor() {
+        return this.color;
+    }
+
+    public int getColorValue() {
+        return this.color.getValue();
     }
 }

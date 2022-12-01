@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-public class MovementTest {
+public class EvaluationTest {
     Board board;
 
     @Before
@@ -65,77 +65,22 @@ public class MovementTest {
     }
 
     @Test
-    public void generateAllPossibleMoves() {
+    public void evaluateCentralisation() {
+        Assert.assertEquals(-0.65, Evaluation.evaluateCentralisation(board, Pion.colors.white.getValue()), 0.001);
+
         updateBoard(board);
 
-        ArrayList<String> allPossibleMoves = Movement.generateAllPossibleMoves(board, Pion.colors.white.getValue());
-        Assert.assertArrayEquals(new String[]{
-                "A2B2",
-                "A2A6",
-                "A2B3",
-                "A3A7",
-                "A3C1",
-                "A3E7",
-                "A4C4",
-                "A4A8",
-                "A4B3",
-                "A4C6",
-                "A5A1",
-                "A5C3",
-                "A5B6",
-                "C5C2",
-                "D4B4",
-                "D4F4",
-                "D4D7",
-                "D4B2",
-                "D6G6",
-                "D6D3",
-                "F5F2",
-                "F5F8",
-                "F5D7",
-                "G1G2",
-                "G1H2",
-                "H3H7",
-                "H3F1",
-                "H5H1",
-                "H5G6",
-                "H5G4",
-                "H6E6",
-                "H6H2",
-                "H6F8",
-                "H6E3",
-        }, allPossibleMoves.toArray());
+        Assert.assertEquals(-0.1125, Evaluation.evaluateCentralisation(board, Pion.colors.white.getValue()), 0.001);
     }
 
     @Test
-    public void getStringFromPos() {
-        Assert.assertEquals("D5", Movement.getStringFromPos(3,4));
+    public void evaluateMobility() {
+        Assert.assertEquals(0.472222222, Evaluation.evaluateMobility(board, Pion.colors.white.getValue()), 0.001);
+
+        updateBoard(board);
+
+        Assert.assertEquals(0.49264705882352944, Evaluation.evaluateMobility(board, Pion.colors.white.getValue()), 0.001);
     }
-
-    @Test
-    public void getPosFromString() {
-        Assert.assertArrayEquals(new int[]{3,3}, Movement.getPosFromString("D4"));
-    }
-
-    @Test
-    public void TestValidMovementsWhite(){
-    }
-
-    @Test
-    public void TestInvalidMovementsWhite(){
-
-    }
-
-    @Test
-    public void TestValidMovementsBlack(){
-
-    }
-
-    @Test
-    public void TestInvalidMovementsBlack(){
-
-    }
-
 
     private void updateBoard(Board board) {
         int [][] tempBoard = {

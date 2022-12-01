@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Evaluation {
+    final static double MOBILITY_COEFFICIENT = 6;
+    final static double CENTRALISATION_COEFFICIENT = 4;
+
     /**
      * TODO Il faut référencer proprement le code ici pour ne pas perdre de points
      * https://dke.maastrichtuniversity.nl/m.winands/documents/informed_search.pdf P.22
@@ -22,29 +25,75 @@ public class Evaluation {
     };
 
 
-    public static int evaluateBoard(Board board, int playerColor) {
+    public static double evaluateBoard(Board board, int playerColor) {
         return naiveEvaluateBoard(board, playerColor);
     }
 
-    private static int naiveEvaluateBoard(Board board, int playerColor) {
+    private static double naiveEvaluateBoard(Board board, int playerColor) {
+        return (int) evaluateCentralisation(board, playerColor);
+    }
+
+    private static double smartEvaluateBoard(Board board, int playerColor) {
+        double playerScore = 0;
+
+        playerScore += evaluateMobility(board, playerColor) * MOBILITY_COEFFICIENT;
+        playerScore += evaluateCentralisation(board, playerColor) * CENTRALISATION_COEFFICIENT;
+
+        return playerScore;
+    }
+
+    public static double evaluateMobility(Board board, int playerColor) {
+        final double CAPTURE_MODIFIER = 2.0;
+        final double MOVE_VALUE = 1.0;
+        final double EDGE_COEFFICIENT = 0.5;
+
+        ArrayList<String> allMoves = Movement.generateAllPossibleMoves(board, playerColor);
+
+        double mobilityValue = 0;
+        double maxPossibleValue = allMoves.size() * CAPTURE_MODIFIER;
+
+        Case currentCase;
+        int x, y;
+        double moveValue;
+
+        for(String move : allMoves) {
+            moveValue = MOVE_VALUE;
+            int[] position = Movement.getPosFromString(move.substring(2));
+            x = position[0];
+            y = position[1];
+
+            currentCase = board.getCase(x, y);
+            if(!currentCase.isEmpty() && currentCase.getPion().getColorValue() != playerColor) {
+                moveValue *= CAPTURE_MODIFIER;
+            }
+
+            if(isOnEdge(x, y)) {
+                moveValue *= EDGE_COEFFICIENT;
+            }
+
+            mobilityValue += moveValue;
+        }
+        return mobilityValue / maxPossibleValue;
+    }
+
+    public static double evaluateCentralisation(Board board, int playerColor) {
         AtomicInteger playerScore = new AtomicInteger();
-        AtomicInteger enemyScore = new AtomicInteger();
         ArrayList<Pion> pionPlayer = (playerColor == Pion.colors.white.getValue() ? board.getPionsBlanc() : board.getPionsNoir());
-        ArrayList<Pion> pionEnemy = (playerColor == Pion.colors.white.getValue() ? board.getPionsNoir() : board.getPionsBlanc());
+
+        final double MAX_POSSIBLE_VALUE = 4 * 50 + 8 * 25;
 
         pionPlayer.forEach(pion -> {
             playerScore.addAndGet(WEIGHT_MATRIX[pion.getX()][pion.getY()]);
         });
 
-        pionEnemy.forEach(pion -> {
-            enemyScore.addAndGet(WEIGHT_MATRIX[pion.getX()][pion.getY()]);
-        });
-
-        return playerScore.get() - enemyScore.get();
+        return playerScore.get() / MAX_POSSIBLE_VALUE;
     }
 
-    private static int smartEvaluateBoard(Board board, int playerColor) {
-        return 0;
-    }
 
+    private static boolean isOnEdge(int x, int y) {
+        final int MIN = 0;
+        final int MAX = 7;
+
+        return (x == MIN || x == MAX) || (y == MIN || y == MAX);
+    }
 }

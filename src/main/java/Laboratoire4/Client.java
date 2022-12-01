@@ -2,13 +2,6 @@ package Laboratoire4;
 
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import Laboratoire4.Board;
-import Laboratoire4.Movement;
-import Laboratoire4.Pion;
-import Laboratoire4.Minmax;
 
 class Client {
     private static Board board = new Board(8, 8);
@@ -36,17 +29,17 @@ class Client {
                 switch (cmd) {
                     // Debut de la partie en joueur blanc
                     case '1' -> {
-                        playerColor = Pion.colors.white;
-                        handleNewGameWhite(input, output, console, playerColor.getValue());
+                        board.setPlayerColor(Pion.colors.white);
+                        board.setEnnemyColor(Pion.colors.black);
+                        handleNewGameWhite(input, output);
                         System.out.println("HERE");
                     }
 
                     // Debut de la partie en joueur Noir
                     case '2' -> {
-                        // pionsBlanc = getInitialWhitePion();
-                        // pionsNoir = getInitialBlackPion();
-                        playerColor = Pion.colors.black;
-                        handleNewGameBlack(input, output, console, playerColor.getValue());
+                        board.setPlayerColor(Pion.colors.black);
+                        board.setEnnemyColor(Pion.colors.white);
+                        handleNewGameBlack(input, output);
                     }
 
                     // Le serveur demande le prochain coup
@@ -55,7 +48,7 @@ class Client {
                         System.out.println("I'm the board being passed");
                         printBoardInConsole(board);
 
-                        handleServerRequestUpdate(input, output, playerColor.getValue());
+                        handleServerRequestUpdate(input, output);
                         // int[][] board2 = board.clone();
                         // String move = Minmax.alphabeta(board2, 4, playerColor.getValue());
                         // Ici on assume que notre coup sera toujours valide puisque la fonction a été
@@ -75,8 +68,7 @@ class Client {
 
     }
 
-    private static void handleNewGameWhite(BufferedInputStream input, BufferedOutputStream output,
-                                           BufferedReader console, int playerColor) throws IOException {
+    private static void handleNewGameWhite(BufferedInputStream input, BufferedOutputStream output) throws IOException {
 
         byte[] aBuffer = new byte[1024];
 
@@ -91,7 +83,7 @@ class Client {
 
         System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
 
-        String dataToSend = executeNextMove(board, playerColor);
+        String dataToSend = executeNextMove(board, board.getPlayerColor().getValue());
         printBoardInConsole(board);
 
         // output.write(move.getBytes(), 0, move.length());
@@ -99,8 +91,7 @@ class Client {
         output.flush();
     }
 
-    private static void handleNewGameBlack(BufferedInputStream input, BufferedOutputStream output,
-                                           BufferedReader console, int playerColor) throws IOException {
+    private static void handleNewGameBlack(BufferedInputStream input, BufferedOutputStream output) throws IOException {
         System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des blancs");
         byte[] aBuffer = new byte[1024];
 
@@ -114,7 +105,7 @@ class Client {
         output.flush();
     }
 
-    private static void handleServerRequestUpdate(BufferedInputStream input, BufferedOutputStream output, int playerColor) throws IOException {
+    private static void handleServerRequestUpdate(BufferedInputStream input, BufferedOutputStream output) throws IOException {
         byte[] aBuffer = new byte[16];
 
         int size = input.available();
@@ -133,7 +124,7 @@ class Client {
 
 
         System.out.println("Entrez votre coup : ");
-        String dataToSend = executeNextMove(board, playerColor);
+        String dataToSend = executeNextMove(board, board.getPlayerColor().getValue());
         printBoardInConsole(board);
 
         output.write(dataToSend.getBytes(), 0, dataToSend.length());

@@ -21,7 +21,7 @@ public class Board {
     }
 
     public Case getCase(int x, int y) {
-        if(!inBound(x, 0, board.length) || !inBound(y, 0, board[0].length)) {
+        if(!Board.inBound(x, 0, board.length) || !Board.inBound(y, 0, board[0].length)) {
             throw new ArrayIndexOutOfBoundsException("The requested index is out of range of this board: " + x + "-" + y);
         }
 
@@ -84,7 +84,7 @@ public class Board {
         return playerColor;
     }
 
-    private boolean inBound(int val, int min, int max) {
+    public static boolean inBound(int val, int min, int max) {
         return (val >= min && val <= max);
     }
 
@@ -106,6 +106,9 @@ public class Board {
                 newBoard.getPionsNoir().add(newBoard.board[x][y].getPion());
             }
         }
+
+        newBoard.playerColor = this.playerColor;
+        newBoard.ennemyColor = this.ennemyColor;
 
         return newBoard;
     }

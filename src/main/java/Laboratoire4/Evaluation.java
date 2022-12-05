@@ -32,8 +32,8 @@ public class Evaluation {
     };
 
 
-    public static double evaluateBoard(Board board, int playerColor) {
-        return naiveEvaluateBoard(board);
+    public static double evaluateBoard(Board board) {
+        return smartEvaluateBoard(board);
     }
 
     private static double naiveEvaluateBoard(Board board) {
@@ -42,6 +42,21 @@ public class Evaluation {
 
     private static double smartEvaluateBoard(Board board) {
         double playerScore = 0;
+
+        boolean isWinning = isPlayerWinning(board);
+        boolean isLosing = isEnnemyWinning(board);
+
+        if(isWinning && isLosing) {
+            return 0; // DRAW
+        }
+
+        if(isWinning) {
+            return Double.MAX_VALUE;
+        }
+
+        if (isLosing) {
+            return Double.MAX_VALUE;
+        }
 
         playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
         playerScore += evaluateCentralisation(board) * CENTRALISATION_COEFFICIENT;
@@ -110,5 +125,48 @@ public class Evaluation {
         final int MAX = 7;
 
         return (x == MIN || x == MAX) || (y == MIN || y == MAX);
+    }
+
+    private static boolean isPlayerWinning(Board board) {
+        for (Pion pion : board.getPlayerPions()) {
+            if(!isPionConnectedToSameColor(board, pion)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isEnnemyWinning(Board board) {
+        for (Pion pion : board.getEnnemyPions()) {
+            if(!isPionConnectedToSameColor(board, pion)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isPionConnectedToSameColor(Board board, Pion pion) {
+        for (int x = -1; x <= 1; x++) {
+            for(int y = -1; y <= 1; y++) {
+                if(x == 0 && y == 0) {
+                    continue; // don't evaluate itself
+                }
+
+                int caseX = x + pion.getX();
+                int caseY = y + pion.getY();
+
+                if(!Board.inBound(caseX, 0 ,7) || !Board.inBound(caseY, 0, 7)) {
+                    continue;
+                }
+
+                if(
+                        !board.getCase(caseX, caseY).isEmpty()
+                                && board.getCase(caseX, caseY).getPion().getColor() == board.getPlayerColor()
+                ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

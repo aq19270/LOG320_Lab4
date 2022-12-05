@@ -315,13 +315,13 @@ public class Movement {
         int[] start = Movement.getPosFromString(move.substring(0, 2));
         int[] end = Movement.getPosFromString(move.substring(2, 4));
 
-        Case oldCase = board.getCase(start[0], start[1] - 1);
+        Case oldCase = board.getCase(start[0], start[1]);
         if(oldCase.isEmpty()) {
            return;
         }
 
         Pion pion = oldCase.getPion();
-        board.getCase(end[0], end[1] - 1).setPion(pion);
+        board.getCase(end[0], end[1]).setPion(pion);
         oldCase.emptyCase();
     }
 

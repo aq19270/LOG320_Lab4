@@ -5,6 +5,16 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Evaluation {
+    final static double MOBILITY_COEFFICIENT = 6;
+    final static double CENTRALISATION_COEFFICIENT = 4;
+
+    //////////////////
+    // MOBILITY CONST
+    /////////////////
+    final static double CAPTURE_MODIFIER = 2.0;
+    final static double MOVE_VALUE = 1.0;
+    final static double EDGE_COEFFICIENT = 0.5;
+
     /**
      * TODO Il faut référencer proprement le code ici pour ne pas perdre de points
      * https://dke.maastrichtuniversity.nl/m.winands/documents/informed_search.pdf P.22
@@ -22,31 +32,143 @@ public class Evaluation {
     };
 
 
-    public static int evaluateBoard(Board board, int playerColor) {
-        return naiveEvaluateBoard(board, playerColor);
+    public static double evaluateBoard(Board board) {
+        return smartEvaluateBoard(board);
     }
 
-    private static int naiveEvaluateBoard(Board board, int playerColor) {
-        AtomicInteger playerScore = new AtomicInteger();
-        AtomicInteger enemyScore = new AtomicInteger();
-        ArrayList<Pion> pionPlayer = (playerColor == Pion.colors.white.getValue() ? board.getPionsBlanc() : board.getPionsNoir());
-        ArrayList<Pion> pionEnemy = (playerColor == Pion.colors.white.getValue() ? board.getPionsNoir() : board.getPionsBlanc());
+    private static double naiveEvaluateBoard(Board board) {
+        return (int) evaluateCentralisation(board);
+    }
 
-        pionPlayer.forEach(pion -> {
+    private static double smartEvaluateBoard(Board board) {
+        double playerScore = 0;
+
+        boolean isWinning = isPlayerWinning(board);
+        boolean isLosing = isEnnemyWinning(board);
+
+        if(isWinning && isLosing) {
+            return 0; // DRAW
+        }
+
+        if(isWinning) {
+            return Double.MAX_VALUE;
+        }
+
+        if (isLosing) {
+            return Double.MAX_VALUE;
+        }
+
+        playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
+        playerScore += evaluateCentralisation(board) * CENTRALISATION_COEFFICIENT;
+
+        return playerScore;
+    }
+
+    public static double evaluateMobility(Board board) {
+        ArrayList<String> allPlayerMove = Movement.generateAllPossibleMoves(board, board.getPlayerColor().getValue());
+        ArrayList<String> allEnnemyMove = Movement.generateAllPossibleMoves(board, board.getEnnemyColor().getValue());
+
+        double maxPossibleValue = Math.max(allPlayerMove.size(), allEnnemyMove.size()) * CAPTURE_MODIFIER;
+        double playerMobilityValue = getMovesValue(board, allPlayerMove, board.getPlayerColor());
+        double ennemyMobilityValue = getMovesValue(board, allEnnemyMove, board.getEnnemyColor());
+
+
+        return (playerMobilityValue - ennemyMobilityValue) / maxPossibleValue;
+    }
+
+    private static double getMovesValue(Board board, ArrayList<String> moves, Pion.colors color) {
+        Case currentCase;
+        int x, y;
+        double moveValue;
+        double  mobilityValue = 0;
+
+        for(String move : moves) {
+            moveValue = MOVE_VALUE;
+            int[] position = Movement.getPosFromString(move.substring(2));
+            x = position[0];
+            y = position[1];
+
+            currentCase = board.getCase(x, y);
+            if(!currentCase.isEmpty() && currentCase.getPion().getColor() != color) {
+                moveValue *= CAPTURE_MODIFIER;
+            }
+
+            if(isOnEdge(x, y)) {
+                moveValue *= EDGE_COEFFICIENT;
+            }
+
+            mobilityValue += moveValue;
+        }
+        return mobilityValue;
+    }
+
+    public static double evaluateCentralisation(Board board) {
+        AtomicInteger playerScore = new AtomicInteger();
+        AtomicInteger ennemyScore = new AtomicInteger();
+
+        final double MAX_POSSIBLE_VALUE = 4 * 50 + 8 * 25;
+
+        board.getPlayerPions().forEach(pion -> {
             playerScore.addAndGet(WEIGHT_MATRIX[pion.getX()][pion.getY()]);
         });
 
-        pionEnemy.forEach(pion -> {
-            enemyScore.addAndGet(WEIGHT_MATRIX[pion.getX()][pion.getY()]);
+        board.getEnnemyPions().forEach(pion -> {
+            ennemyScore.addAndGet(WEIGHT_MATRIX[pion.getX()][pion.getY()]);
         });
 
-        return playerScore.get() - enemyScore.get();
+        return (playerScore.get() - ennemyScore.get()) / MAX_POSSIBLE_VALUE;
     }
 
-    private static int smartEvaluateBoard(Board board, int playerColor) {
-        return 0;
+
+    private static boolean isOnEdge(int x, int y) {
+        final int MIN = 0;
+        final int MAX = 7;
+
+        return (x == MIN || x == MAX) || (y == MIN || y == MAX);
     }
 
+    private static boolean isPlayerWinning(Board board) {
+        for (Pion pion : board.getPlayerPions()) {
+            if(!isPionConnectedToSameColor(board, pion)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isEnnemyWinning(Board board) {
+        for (Pion pion : board.getEnnemyPions()) {
+            if(!isPionConnectedToSameColor(board, pion)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isPionConnectedToSameColor(Board board, Pion pion) {
+        for (int x = -1; x <= 1; x++) {
+            for(int y = -1; y <= 1; y++) {
+                if(x == 0 && y == 0) {
+                    continue; // don't evaluate itself
+                }
+
+                int caseX = x + pion.getX();
+                int caseY = y + pion.getY();
+
+                if(!Board.inBound(caseX, 0 ,7) || !Board.inBound(caseY, 0, 7)) {
+                    continue;
+                }
+
+                if(
+                        !board.getCase(caseX, caseY).isEmpty()
+                                && board.getCase(caseX, caseY).getPion().getColor() == board.getPlayerColor()
+                ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     private static float concentration(Board board, int playerColor) {
         Pion com = getCentreOfMass(board, playerColor);
         int difrow;

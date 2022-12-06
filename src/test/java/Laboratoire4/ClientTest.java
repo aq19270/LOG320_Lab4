@@ -13,7 +13,9 @@ public class ClientTest {
     @Before
     public void init() {
         board = new Board(8, 8);
-
+        board.setPlayerColor(Pion.colors.white);
+        board.setEnnemyColor(Pion.colors.black);
+        
         int [][] tempBoard = {
                 { // X1
                         0,2,2,2,2,2,2,0

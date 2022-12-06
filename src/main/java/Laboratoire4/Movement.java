@@ -17,7 +17,7 @@ public class Movement {
         return possibleMoves;
     }
 
-    private static ArrayList<String> generateAllMoveForPion(Board board, int playerColor, Pion pion) {
+    public static ArrayList<String> generateAllMoveForPion(Board board, int playerColor, Pion pion) {
         ArrayList<String> possibleMoves = new ArrayList<>();
         possibleMoves.addAll(getHorizontalMoves(board, playerColor, pion));
         possibleMoves.addAll(getVerticalMoves(board, playerColor, pion));
@@ -63,9 +63,9 @@ public class Movement {
         String currentPos = getStringFromPos(pion.getX(), pion.getY());
 
         if(
-                leftXMovement > 0
+                leftXMovement > -1
                     && (nearestLeftEnemyPionPos == Integer.MIN_VALUE || leftXMovement >= nearestLeftEnemyPionPos)
-                    && (board.getCase(leftXMovement,pion.getY()).isEmpty() || board.getCase(leftXMovement,pion.getY()).getPion().getColorValue() != playerColor)
+                    && (board.getCase(leftXMovement, pion.getY()).isEmpty() || board.getCase(leftXMovement, pion.getY()).getPion().getColorValue() != playerColor)
         ) {
             possibleMoves.add(
                     currentPos + getStringFromPos(leftXMovement, pion.getY())
@@ -304,10 +304,10 @@ public class Movement {
     public static int[] getPosFromString(String pos) {
         // 65 est la valeur de A qui est notre index 0. 65 - 65 donnerait la case 0;
         final int VALUE_OF_A_IN_ASCII = 65;
-        final int VALUE_OF_0_IN_ASCII = 48;
+        final int VALUE_OF_1_IN_ASCII = 49;
 
         int x = (int) pos.charAt(0) - VALUE_OF_A_IN_ASCII;
-        int y = (int) pos.charAt(1) - VALUE_OF_0_IN_ASCII;
+        int y = (int) pos.charAt(1) - VALUE_OF_1_IN_ASCII;
         return new int[]{x, y};
     }
 
@@ -315,13 +315,13 @@ public class Movement {
         int[] start = Movement.getPosFromString(move.substring(0, 2));
         int[] end = Movement.getPosFromString(move.substring(2, 4));
 
-        Case oldCase = board.getCase(start[0], start[1] - 1);
+        Case oldCase = board.getCase(start[0], start[1]);
         if(oldCase.isEmpty()) {
            return;
         }
 
         Pion pion = oldCase.getPion();
-        board.getCase(end[0], end[1] - 1).setPion(pion);
+        board.getCase(end[0], end[1]).setPion(pion);
         oldCase.emptyCase();
     }
 

@@ -47,4 +47,37 @@ public class Evaluation {
         return 0;
     }
 
+    private static float concentration(Board board, int playerColor) {
+        Pion com = getCentreOfMass(board, playerColor);
+        int difrow;
+        int difcol;
+        int sumDistances = 0;
+        ArrayList<Pion> pionPlayer = (playerColor == Pion.colors.white.getValue() ? board.getPionsBlanc() : board.getPionsNoir());
+        for (Pion p : pionPlayer) {
+            difrow = Math.abs(com.getY() - p.getY());
+            difcol = Math.abs(com.getX() - p.getX());
+            sumDistances += Math.max(difrow, difcol);
+        }
+        int sumMinDistances = pionPlayer.size() - 1 <= 8 ? pionPlayer.size() - 1 : 8 + ((pionPlayer.size() - 1) % 8 * 2);
+        int surplus = sumDistances - sumMinDistances;
+        return 1 / surplus;
+    }
+
+    public static Pion getCentreOfMass(Board board, int playerColor) {
+        ArrayList<Pion> pionPlayer = (playerColor == Pion.colors.white.getValue() ? board.getPionsBlanc() : board.getPionsNoir());
+        int x = 0;
+        int y = 0;
+        for (Pion p : pionPlayer) {
+            x += p.getX();
+            y += p.getY();
+        }
+        x /= pionPlayer.size();
+        y /= pionPlayer.size();
+        return new Pion(x, y, Pion.colors.white);
+    }
+
+    public static float centreOfMassPosition(Board board, int playerColor) {
+
+        return 0;
+    }
 }

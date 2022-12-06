@@ -47,13 +47,16 @@ public class Evaluation {
     private static float smartEvaluateBoard(Board board, int playerColor) {
         float score = 0;
         int quadsWeight = 1;
-        float quadsScore = evaluateQuads(board, playerColor);
+        float quadsScore = evaluateQuads(board);
         score += (quadsScore * quadsWeight);
         return score;
     }
 
-    private static float evaluateQuads(Board board, int playerColor) {
-        int nbQuads = 0;
+    private static float evaluateQuads(Board board) {
+        int playerColor = board.getPlayerColor().getValue();
+        int enemyColor = board.getEnnemyColor().getValue();
+        int nbQuadsPlayer = 0;
+        int nbQuadsEnemy = 0;
         Case centreOfMass = board.getCase(4, 4); // TO DO remplacer par la bonne fonction de détermination du centre
         int minX = centreOfMass.getPion().getX() - 2 >= 0 ? centreOfMass.getPion().getX() : 0;
         int maxX = centreOfMass.getPion().getX() + 2 <= 7 ? centreOfMass.getPion().getX() : 7;
@@ -61,25 +64,27 @@ public class Evaluation {
         int maxY = centreOfMass.getPion().getY() + 2 <= 7 ? centreOfMass.getPion().getY() : 7;
         for (int i = minX; i < maxX; i++) {
             for (int j = minY; j < maxY; j++) {
-                int nbCase = 0;
-                if (board.getCase(i, j).getPion().getColorValue() == playerColor) {
-                    nbCase += 1;
-                }
-                if (board.getCase(i + 1, j).getPion().getColorValue() == playerColor) {
-                    nbCase += 1;
-                }
-                if (board.getCase(i, j + 1).getPion().getColorValue() == playerColor) {
-                    nbCase += 1;
-                }
-                if (board.getCase(i + 1, j + 1).getPion().getColorValue() == playerColor) {
-                    nbCase += 1;
-                }
-                if (nbCase >= 3) {
-                    nbQuads += 1;
+                int nbCasePlayer = 0;
+                int nbCaseEnemy = 0;
+                for (int k = 0; k < 2; k++) {
+                    for (int l = 0; l < 2; l++) {
+                        if (board.getCase(i + k, j + l).getPion().getColorValue() == playerColor) {
+                            nbCasePlayer += 1;
+                        }
+                        if (board.getCase(i + k, j + l).getPion().getColorValue() == enemyColor) {
+                            nbCaseEnemy += 1;
+                        }
+                        if (nbCasePlayer >= 3) {
+                            nbQuadsPlayer += 1;
+                        }
+                        if (nbCaseEnemy >= 3) {
+                            nbQuadsEnemy += 1;
+                        }
+                    }
                 }
             }
         }
-        return nbQuads / 10; // retourne une valeur entre 0 et 1 mais souvent plus proche de 0
+        return (nbQuadsPlayer - nbQuadsEnemy) / 10; // retourne une valeur entre 0 et 1 mais souvent plus proche de 0
     };
 
 }

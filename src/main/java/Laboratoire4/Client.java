@@ -7,12 +7,23 @@ class Client {
     private static Board board = new Board(8, 8);
 
     public static void main(String[] args) {
+        String hostname = "localhost";
+        int port = 8888;
+
+        if(args.length > 0) {
+            hostname = args[0];
+        }
+
+        if(args.length > 1) {
+            port = Integer.parseInt(args[1]);
+        }
+
         Socket MyClient;
         BufferedInputStream input;
         BufferedOutputStream output;
 
         try {
-            MyClient = new Socket("localhost", 8888);
+            MyClient = new Socket(hostname, port);
 
             input = new BufferedInputStream(MyClient.getInputStream());
             output = new BufferedOutputStream(MyClient.getOutputStream());

@@ -33,6 +33,7 @@ public class Evaluation {
 
 
     public static double evaluateBoard(Board board) {
+//        return naiveEvaluateBoard(board);
         return smartEvaluateBoard(board);
     }
 

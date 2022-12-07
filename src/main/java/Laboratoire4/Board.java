@@ -84,6 +84,10 @@ public class Board {
         return playerColor;
     }
 
+    public int changePlayer(int player) {
+        return player == Pion.colors.black.getValue() ? Pion.colors.white.getValue() : Pion.colors.black.getValue();
+    }
+
     public static boolean inBound(int val, int min, int max) {
         return (val >= min && val <= max);
     }

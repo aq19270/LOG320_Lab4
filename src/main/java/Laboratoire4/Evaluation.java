@@ -64,7 +64,7 @@ public class Evaluation {
         playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
         playerScore += evaluateCentralisation(board) * CENTRALISATION_COEFFICIENT;
         playerScore += evaluateConcentration(board) * CONCENTRATION_COEFFICIENT;
-        playerScore += evaluateQuads(board) * QUADS_COEFFICIENT;
+//        playerScore += evaluateQuads(board) * QUADS_COEFFICIENT;
         return playerScore;
     }
 
@@ -218,7 +218,7 @@ public class Evaluation {
                 : 8 + ((pionPlayer.size() - 1) % 8 * 2);
         int surplus = sumDistances - sumMinDistances;
         if (surplus == 0) {
-            return 0;
+            return 1;
         }
 
         return 1 / surplus;

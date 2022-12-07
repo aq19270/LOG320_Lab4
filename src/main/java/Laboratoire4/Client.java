@@ -126,6 +126,8 @@ class Client {
 
         String move = new String(aBuffer);
 
+        boolean captured = Movement.lastMoveCaptured(move, board);
+
         // update board
         move = move.trim().replace(" ", "").replace("-", "");
 

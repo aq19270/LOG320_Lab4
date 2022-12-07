@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Evaluation {
-    final static double CONCENTRATION_COEFFICIENT = 12;
-    final static double MOBILITY_COEFFICIENT = 10;
-    final static double QUADS_COEFFICIENT = 8;
+    final static double CONCENTRATION_COEFFICIENT = 15;
+    final static double MOBILITY_COEFFICIENT = 12;
+    final static double QUADS_COEFFICIENT = 9;
     final static double CENTRALISATION_COEFFICIENT = 7;
 
     //////////////////

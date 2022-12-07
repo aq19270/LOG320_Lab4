@@ -95,7 +95,7 @@ class Client {
 
         System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
 
-        String dataToSend = executeNextMove(board, board.getPlayerColor().getValue());
+        String dataToSend = executeNextMove(board, board.getPlayerColor().getValue(), false);
         printBoardInConsole(board);
 
         // output.write(move.getBytes(), 0, move.length());
@@ -138,7 +138,7 @@ class Client {
 
 
         System.out.println("Entrez votre coup : ");
-        String dataToSend = executeNextMove(board, board.getPlayerColor().getValue());
+        String dataToSend = executeNextMove(board, board.getPlayerColor().getValue(), captured);
         System.out.println("PION Joueur restant: " + board.getPlayerPions().size());
         System.out.println("PION Ennemi restant: " + board.getEnnemyPions().size());
         printBoardInConsole(board);
@@ -190,7 +190,7 @@ class Client {
         System.out.println("―――――――――――――――――――――――――――――――――――――");
     }
 
-    private static String executeNextMove(Board currentBoard, int playerColor) {
+    private static String executeNextMove(Board currentBoard, int playerColor, boolean captured) {
         Board boardCopy = currentBoard.clone();
 
         String nextMove = Minmax.findBestMove(boardCopy, 3);

@@ -5,17 +5,17 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Evaluation {
-    final static double MOBILITY_COEFFICIENT = 0;
-    final static double CENTRALISATION_COEFFICIENT = 0;
-    final static double CONCENTRATION_COEFFICIENT = 3;
-    final static double QUADS_COEFFICIENT = 3;
+    final static double CONCENTRATION_COEFFICIENT = 12;
+    final static double MOBILITY_COEFFICIENT = 10;
+    final static double QUADS_COEFFICIENT = 8;
+    final static double CENTRALISATION_COEFFICIENT = 7;
 
     //////////////////
     // MOBILITY CONST
     /////////////////
-    final static double CAPTURE_MODIFIER = 3.0;
+    final static double CAPTURE_MODIFIER = 1.5;
     final static double MOVE_VALUE = 1.0;
-    final static double EDGE_COEFFICIENT = 0.5;
+    final static double EDGE_COEFFICIENT = 0.3;
 
     /**
      * TODO Il faut référencer proprement le code ici pour ne pas perdre de points
@@ -215,11 +215,7 @@ public class Evaluation {
         int sumMinDistances = pionPlayer.size() - 1 <= 8 ? pionPlayer.size() - 1
                 : 8 + ((pionPlayer.size() - 1) % 8 * 2);
         int surplus = sumDistances - sumMinDistances;
-        if (surplus == 0) {
-            return 1;
-        }
-
-        return 1 / surplus;
+        return surplus == 0 ? 1 : 1 / surplus;
     }
 
     public static Pion getCentreOfMass(Board board) {

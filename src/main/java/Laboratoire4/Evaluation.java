@@ -54,14 +54,14 @@ public class Evaluation {
         }
 
         if(isWinning) {
-            return Double.MAX_VALUE;
+            return Double.POSITIVE_INFINITY;
         }
 
         if (isLosing) {
-            return Double.MIN_VALUE;
+            return Double.NEGATIVE_INFINITY;
         }
 
-        playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
+//        playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
         playerScore += evaluateCentralisation(board) * CENTRALISATION_COEFFICIENT;
 
         return playerScore;

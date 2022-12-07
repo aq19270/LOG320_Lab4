@@ -13,10 +13,10 @@ public class Node {
     }
 
     public static Node buildTree(Board board, int player, int depth) {
+        if (depth < 0)
+            return null;
         ArrayList<String> moves = Movement.generateAllPossibleMoves(board, player);
         Node node = new Node(board);
-        if (depth == 0)
-            return node;
         int j = 0;
         for (String move : moves) {
             Movement.executeMove(move, node.board);

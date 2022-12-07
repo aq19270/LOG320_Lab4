@@ -331,6 +331,20 @@ public class Movement {
         oldCase.emptyCase();
     }
 
+    public static boolean lastMoveCaptured(String move, Board board) {
+        int[] start = Movement.getPosFromString(move.substring(0, 2));
+        int[] end = Movement.getPosFromString(move.substring(2, 4));
+
+        Case oldCase = board.getCase(start[0], start[1]);
+        Case newCase = board.getCase(end[0], end[1]);
+
+        if(!newCase.isEmpty() && oldCase.getPion().getColor() != newCase.getPion().getColor()) {
+            return true;
+        }
+
+        return false;
+    }
+
     //    public static boolean ValidateMovement(int[][] board, colors color, String initPos, String finalPos) {
     //        System.out.println(color);
     //

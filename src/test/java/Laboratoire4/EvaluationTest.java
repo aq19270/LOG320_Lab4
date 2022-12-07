@@ -67,6 +67,69 @@ public class EvaluationTest {
     }
 
     @Test
+    public void smartEval() {
+        Assert.assertEquals(0, Evaluation.evaluateBoard(board), 0.000000001);
+
+        int [][] tempBoard = {
+                { // X1
+                        0,4,4,4,4,4,4,0
+                },
+                { //X2
+                        2,0,2,0,0,0,0,0
+                },
+                { //X3
+                        2,0,0,2,0,0,0,0
+                },
+                { //X4
+                        2,0,2,0,0,0,0,0
+                },
+                { //X5
+                        2,2,0,0,0,0,0,0
+                },
+                { //X6
+                        2,0,2,0,0,0,0,0
+                },
+                {  //X7
+                        2,2,0,0,0,0,0,0
+                },
+                { //X8
+                        0,4,4,4,4,4,4,0
+                }
+        };
+
+        board.getPionsBlanc().clear();
+        board.getPionsNoir().clear();
+
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                if(tempBoard[x][y] == 0) {
+                    board.getCase(x, y).emptyCase();
+                    continue;
+                }
+
+                if(tempBoard[x][y] == 4) {
+                    Pion pion = new Pion(x, y, Pion.colors.white);
+                    board.addPionBlanc(pion);
+                    board.getCase(x, y).setPion(pion);
+                    continue;
+                }
+
+                Pion pion = new Pion(x, y, Pion.colors.black);
+                board.addPionNoir(pion);
+                board.getCase(x, y).setPion(pion);
+            }
+        }
+
+        Assert.assertEquals(Double.NEGATIVE_INFINITY, Evaluation.evaluateBoard(board), 0.000000001);
+
+        board.setPlayerColor(Pion.colors.black);
+        board.setEnnemyColor(Pion.colors.white);
+
+        Assert.assertEquals(Double.POSITIVE_INFINITY, Evaluation.evaluateBoard(board), 0.000000001);
+
+    }
+
+    @Test
     public void evaluateCentralisation() {
         Assert.assertEquals(0, Evaluation.evaluateCentralisation(board), 0.001);
 

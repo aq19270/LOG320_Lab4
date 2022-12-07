@@ -235,7 +235,7 @@ public class Evaluation {
         return new Pion(x, y, Pion.colors.white);
     }
 
-    private static float evaluateQuads(Board board) {
+    private static double evaluateQuads(Board board) {
         int playerColor = board.getPlayerColor().getValue();
         int enemyColor = board.getEnnemyColor().getValue();
         int nbQuadsPlayer = 0;
@@ -271,7 +271,7 @@ public class Evaluation {
                 }
             }
         }
-        return (nbQuadsPlayer - nbQuadsEnemy) / 10; // retourne une valeur entre 0 et 1 mais souvent plus proche de 0
+        return (nbQuadsPlayer - nbQuadsEnemy) / 10.0;
     };
 
 }

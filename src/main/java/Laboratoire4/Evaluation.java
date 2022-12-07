@@ -2,6 +2,7 @@ package Laboratoire4;
 
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Evaluation {
@@ -57,7 +58,7 @@ public class Evaluation {
         }
 
         if (isLosing) {
-            return Double.MAX_VALUE;
+            return Double.MIN_VALUE;
         }
 
         playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
@@ -130,47 +131,79 @@ public class Evaluation {
     }
 
     private static boolean isPlayerWinning(Board board) {
-        for (Pion pion : board.getPlayerPions()) {
-            if(!isPionConnectedToSameColor(board, pion)) {
-                return false;
+        LinkedList<Pion> visited = new LinkedList<>();
+        LinkedList<Pion> toVisit = new LinkedList<>();
+        toVisit.push(board.getPlayerPions().get(0));
+
+        Pion currentPion = null;
+        while (toVisit.size() > 0) {
+            currentPion = toVisit.pop();
+            visited.push(currentPion);
+
+            for (int x = -1; x <= 1; x++) {
+                for(int y = -1; y <= 1; y++) {
+                    if(x == 0 && y == 0) {
+                        continue; // don't evaluate itself
+                    }
+
+                    int caseX = x + currentPion.getX();
+                    int caseY = y + currentPion.getY();
+
+                    if(!Board.inBound(caseX, 0 ,7) || !Board.inBound(caseY, 0, 7)) {
+                        continue;
+                    }
+
+                    if(
+                            !board.getCase(caseX, caseY).isEmpty()
+                            && board.getCase(caseX, caseY).getPion().getColor() == board.getPlayerColor()
+                            && !visited.contains(board.getCase(caseX, caseY).getPion())
+                    ) {
+                        toVisit.push(board.getCase(caseX, caseY).getPion());
+                    }
+                }
             }
         }
-        return true;
+
+        return visited.size() == board.getPlayerPions().size();
     }
 
     private static boolean isEnnemyWinning(Board board) {
-        for (Pion pion : board.getEnnemyPions()) {
-            if(!isPionConnectedToSameColor(board, pion)) {
-                return false;
+        LinkedList<Pion> visited = new LinkedList<>();
+        LinkedList<Pion> toVisit = new LinkedList<>();
+        toVisit.push(board.getEnnemyPions().get(0));
+
+        Pion currentPion = null;
+        while (toVisit.size() > 0) {
+            currentPion = toVisit.pop();
+            visited.push(currentPion);
+
+            for (int x = -1; x <= 1; x++) {
+                for(int y = -1; y <= 1; y++) {
+                    if(x == 0 && y == 0) {
+                        continue; // don't evaluate itself
+                    }
+
+                    int caseX = x + currentPion.getX();
+                    int caseY = y + currentPion.getY();
+
+                    if(!Board.inBound(caseX, 0 ,7) || !Board.inBound(caseY, 0, 7)) {
+                        continue;
+                    }
+
+                    if(
+                            !board.getCase(caseX, caseY).isEmpty()
+                                    && board.getCase(caseX, caseY).getPion().getColor() == board.getEnnemyColor()
+                                    && !visited.contains(board.getCase(caseX, caseY).getPion())
+                    ) {
+                        toVisit.push(board.getCase(caseX, caseY).getPion());
+                    }
+                }
             }
         }
-        return true;
+
+        return visited.size() == board.getEnnemyPions().size();
     }
 
-    private static boolean isPionConnectedToSameColor(Board board, Pion pion) {
-        for (int x = -1; x <= 1; x++) {
-            for(int y = -1; y <= 1; y++) {
-                if(x == 0 && y == 0) {
-                    continue; // don't evaluate itself
-                }
-
-                int caseX = x + pion.getX();
-                int caseY = y + pion.getY();
-
-                if(!Board.inBound(caseX, 0 ,7) || !Board.inBound(caseY, 0, 7)) {
-                    continue;
-                }
-
-                if(
-                        !board.getCase(caseX, caseY).isEmpty()
-                                && board.getCase(caseX, caseY).getPion().getColor() == board.getPlayerColor()
-                ) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     private static float concentration(Board board, int playerColor) {
         Pion com = getCentreOfMass(board, playerColor);
         int difrow;

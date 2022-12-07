@@ -52,6 +52,21 @@ public class Board {
         return this.pionsNoir;
     }
 
+    public ArrayList<Pion> getPionsMatchingColor(Pion.colors color) {
+        if(color == Pion.colors.white) {
+            return this.pionsBlanc;
+        }
+        return this.pionsNoir;
+    }
+
+    public void removePionFromBoard(Pion pion) {
+        if(pion.getColor() == Pion.colors.white) {
+            this.pionsBlanc.remove(pion);
+            return;
+        }
+        this.pionsNoir.remove(pion);
+    }
+
     public void setPlayerColor(Pion.colors playerColor) {
         this.playerColor = playerColor;
     }

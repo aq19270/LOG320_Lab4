@@ -1,5 +1,7 @@
 package Laboratoire4;
 
+import java.util.ArrayList;
+
 public class Minmax {
     public static String findBestMove(Board board, int depth) {
         Node root = Node.buildTree(board, board.getPlayerColor().getValue(), depth);

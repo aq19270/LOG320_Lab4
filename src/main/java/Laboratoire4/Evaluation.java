@@ -64,7 +64,7 @@ public class Evaluation {
         playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
         playerScore += evaluateCentralisation(board) * CENTRALISATION_COEFFICIENT;
         playerScore += evaluateConcentration(board) * CONCENTRATION_COEFFICIENT;
-//        playerScore += evaluateQuads(board) * QUADS_COEFFICIENT;
+        playerScore += evaluateQuads(board) * QUADS_COEFFICIENT;
         return playerScore;
     }
 
@@ -155,8 +155,7 @@ public class Evaluation {
                     if (!board.getCase(caseX, caseY).isEmpty()
                             && board.getCase(caseX, caseY).getPion().getColor() == board.getPlayerColor()
                             && !visited.contains(board.getCase(caseX, caseY).getPion())
-                            && !toVisit.contains(board.getCase(caseX, caseY).getPion()))
-                    {
+                            && !toVisit.contains(board.getCase(caseX, caseY).getPion())) {
                         toVisit.push(board.getCase(caseX, caseY).getPion());
                     }
                 }
@@ -192,8 +191,7 @@ public class Evaluation {
                     if (!board.getCase(caseX, caseY).isEmpty()
                             && board.getCase(caseX, caseY).getPion().getColor() == board.getEnnemyColor()
                             && !visited.contains(board.getCase(caseX, caseY).getPion())
-                            && !toVisit.contains(board.getCase(caseX, caseY).getPion()))
-                    {
+                            && !toVisit.contains(board.getCase(caseX, caseY).getPion())) {
                         toVisit.push(board.getCase(caseX, caseY).getPion());
                     }
                 }
@@ -237,41 +235,43 @@ public class Evaluation {
         return new Pion(x, y, Pion.colors.white);
     }
 
-    private static float evaluateQuads(Board board) {
+    private static double evaluateQuads(Board board) {
         int playerColor = board.getPlayerColor().getValue();
         int enemyColor = board.getEnnemyColor().getValue();
         int nbQuadsPlayer = 0;
         int nbQuadsEnemy = 0;
         Pion centreOfMass = getCentreOfMass(board);
-        int minX = centreOfMass.getX() - 2 >= 0 ? centreOfMass.getX() : 0;
-        int maxX = centreOfMass.getX() + 2 <= 6 ? centreOfMass.getX() : 6;
-        int minY = centreOfMass.getY() - 2 >= 0 ? centreOfMass.getY() : 0;
-        int maxY = centreOfMass.getY() + 2 <= 6 ? centreOfMass.getY() : 6;
+        int minX = centreOfMass.getX() - 2 >= 0 ? centreOfMass.getX() - 2 : 0;
+        int maxX = centreOfMass.getX() + 2 <= 6 ? centreOfMass.getX() + 2 : 6;
+        int minY = centreOfMass.getY() - 2 >= 0 ? centreOfMass.getY() - 2 : 0;
+        int maxY = centreOfMass.getY() + 2 <= 6 ? centreOfMass.getY() + 2 : 6;
+        int nbCasePlayer;
+        int nbCaseEnemy;
         for (int i = minX; i < maxX; i++) {
             for (int j = minY; j < maxY; j++) {
-                int nbCasePlayer = 0;
-                int nbCaseEnemy = 0;
+                nbCasePlayer = 0;
+                nbCaseEnemy = 0;
                 for (int k = 0; k < 2; k++) {
                     for (int l = 0; l < 2; l++) {
                         if (!board.getCase(i + k, j + l).isEmpty()) {
                             if (board.getCase(i + k, j + l).getPion().getColorValue() == playerColor) {
-                                nbCasePlayer += 1;
+                                nbCasePlayer++;
                             }
                             if (board.getCase(i + k, j + l).getPion().getColorValue() == enemyColor) {
-                                nbCaseEnemy += 1;
+                                nbCaseEnemy++;
                             }
                         }
                     }
                 }
                 if (nbCasePlayer >= 3) {
-                    nbQuadsPlayer += 1;
+                    nbQuadsPlayer++;
                 }
                 if (nbCaseEnemy >= 3) {
-                    nbQuadsEnemy += 1;
+                    nbQuadsEnemy++;
                 }
             }
         }
-        return (nbQuadsPlayer - nbQuadsEnemy) / 10; // retourne une valeur entre 0 et 1 mais souvent plus proche de 0
+        return (nbQuadsPlayer - nbQuadsEnemy) / 10.0;
     };
 
 }

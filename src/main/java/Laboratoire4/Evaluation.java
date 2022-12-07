@@ -5,15 +5,15 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Evaluation {
-    final static double MOBILITY_COEFFICIENT = 15;
-    final static double CENTRALISATION_COEFFICIENT = 10;
-    final static double CONCENTRATION_COEFFICIENT = 20;
-    final static double QUADS_COEFFICIENT = 0;
+    final static double MOBILITY_COEFFICIENT = 0;
+    final static double CENTRALISATION_COEFFICIENT = 0;
+    final static double CONCENTRATION_COEFFICIENT = 3;
+    final static double QUADS_COEFFICIENT = 3;
 
     //////////////////
     // MOBILITY CONST
     /////////////////
-    final static double CAPTURE_MODIFIER = 2.0;
+    final static double CAPTURE_MODIFIER = 3.0;
     final static double MOVE_VALUE = 1.0;
     final static double EDGE_COEFFICIENT = 0.5;
 
@@ -64,7 +64,7 @@ public class Evaluation {
         playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
         playerScore += evaluateCentralisation(board) * CENTRALISATION_COEFFICIENT;
         playerScore += evaluateConcentration(board) * CONCENTRATION_COEFFICIENT;
-//        playerScore += evaluateQuads(board) * QUADS_COEFFICIENT;
+        playerScore += evaluateQuads(board) * QUADS_COEFFICIENT;
         return playerScore;
     }
 
@@ -129,7 +129,7 @@ public class Evaluation {
         return (x == MIN || x == MAX) || (y == MIN || y == MAX);
     }
 
-    private static boolean isPlayerWinning(Board board) {
+    public static boolean isPlayerWinning(Board board) {
         LinkedList<Pion> visited = new LinkedList<>();
         LinkedList<Pion> toVisit = new LinkedList<>();
         toVisit.push(board.getPlayerPions().get(0));
@@ -154,7 +154,9 @@ public class Evaluation {
 
                     if (!board.getCase(caseX, caseY).isEmpty()
                             && board.getCase(caseX, caseY).getPion().getColor() == board.getPlayerColor()
-                            && !visited.contains(board.getCase(caseX, caseY).getPion())) {
+                            && !visited.contains(board.getCase(caseX, caseY).getPion())
+                            && !toVisit.contains(board.getCase(caseX, caseY).getPion()))
+                    {
                         toVisit.push(board.getCase(caseX, caseY).getPion());
                     }
                 }
@@ -164,7 +166,7 @@ public class Evaluation {
         return visited.size() == board.getPlayerPions().size();
     }
 
-    private static boolean isEnnemyWinning(Board board) {
+    public static boolean isEnnemyWinning(Board board) {
         LinkedList<Pion> visited = new LinkedList<>();
         LinkedList<Pion> toVisit = new LinkedList<>();
         toVisit.push(board.getEnnemyPions().get(0));
@@ -189,7 +191,9 @@ public class Evaluation {
 
                     if (!board.getCase(caseX, caseY).isEmpty()
                             && board.getCase(caseX, caseY).getPion().getColor() == board.getEnnemyColor()
-                            && !visited.contains(board.getCase(caseX, caseY).getPion())) {
+                            && !visited.contains(board.getCase(caseX, caseY).getPion())
+                            && !toVisit.contains(board.getCase(caseX, caseY).getPion()))
+                    {
                         toVisit.push(board.getCase(caseX, caseY).getPion());
                     }
                 }
@@ -213,6 +217,10 @@ public class Evaluation {
         int sumMinDistances = pionPlayer.size() - 1 <= 8 ? pionPlayer.size() - 1
                 : 8 + ((pionPlayer.size() - 1) % 8 * 2);
         int surplus = sumDistances - sumMinDistances;
+        if (surplus == 0) {
+            return 0;
+        }
+
         return 1 / surplus;
     }
 

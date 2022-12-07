@@ -6,6 +6,8 @@ public class Board {
     private Case[][] board;
     private ArrayList<Pion> pionsBlanc = new ArrayList<>();
     private ArrayList<Pion> pionsNoir = new ArrayList<>();
+    private Pion.colors playerColor;
+    private Pion.colors ennemyColor;
 
 
     public Board(int sizeX, int sizeY) {
@@ -19,7 +21,7 @@ public class Board {
     }
 
     public Case getCase(int x, int y) {
-        if(!inBound(x, 0, board.length) || !inBound(y, 0, board[0].length)) {
+        if(!Board.inBound(x, 0, board.length) || !Board.inBound(y, 0, board[0].length)) {
             throw new ArrayIndexOutOfBoundsException("The requested index is out of range of this board: " + x + "-" + y);
         }
 
@@ -50,7 +52,58 @@ public class Board {
         return this.pionsNoir;
     }
 
-    private boolean inBound(int val, int min, int max) {
+    public ArrayList<Pion> getPionsMatchingColor(Pion.colors color) {
+        if(color == Pion.colors.white) {
+            return this.pionsBlanc;
+        }
+        return this.pionsNoir;
+    }
+
+    public void removePionFromBoard(Pion pion) {
+        if(pion.getColor() == Pion.colors.white) {
+            this.pionsBlanc.remove(pion);
+            return;
+        }
+        this.pionsNoir.remove(pion);
+    }
+
+    public void setPlayerColor(Pion.colors playerColor) {
+        this.playerColor = playerColor;
+    }
+
+    public void setEnnemyColor(Pion.colors ennemyColor) {
+        this.ennemyColor = ennemyColor;
+    }
+
+    public ArrayList<Pion> getPlayerPions() {
+        if(this.playerColor == Pion.colors.white) {
+            return this.getPionsBlanc();
+        }
+
+        return this.getPionsNoir();
+    }
+
+    public ArrayList<Pion> getEnnemyPions() {
+        if(this.playerColor == Pion.colors.white) {
+            return this.getPionsNoir();
+        }
+
+        return this.getPionsBlanc();
+    }
+
+    public Pion.colors getEnnemyColor() {
+        return ennemyColor;
+    }
+
+    public Pion.colors getPlayerColor() {
+        return playerColor;
+    }
+
+    public int changePlayer(int player) {
+        return player == Pion.colors.black.getValue() ? Pion.colors.white.getValue() : Pion.colors.black.getValue();
+    }
+
+    public static boolean inBound(int val, int min, int max) {
         return (val >= min && val <= max);
     }
 
@@ -72,6 +125,9 @@ public class Board {
                 newBoard.getPionsNoir().add(newBoard.board[x][y].getPion());
             }
         }
+
+        newBoard.playerColor = this.playerColor;
+        newBoard.ennemyColor = this.ennemyColor;
 
         return newBoard;
     }

@@ -1,7 +1,6 @@
 package Laboratoire4;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class Minmax {
     public static String alphabeta(Board board, int depth, int playerColor) {

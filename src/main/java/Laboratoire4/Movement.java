@@ -1,6 +1,7 @@
 package Laboratoire4;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Movement {
@@ -316,11 +317,16 @@ public class Movement {
         int[] end = Movement.getPosFromString(move.substring(2, 4));
 
         Case oldCase = board.getCase(start[0], start[1]);
+        Case newCase = board.getCase(end[0], end[1]);
         if(oldCase.isEmpty()) {
            return;
         }
 
         Pion pion = oldCase.getPion();
+        if(!newCase.isEmpty()) {
+            board.removePionFromBoard(newCase.getPion());
+        }
+
         board.getCase(end[0], end[1]).setPion(pion);
         oldCase.emptyCase();
     }

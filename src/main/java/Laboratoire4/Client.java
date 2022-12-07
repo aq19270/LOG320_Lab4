@@ -2,6 +2,7 @@ package Laboratoire4;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 
 class Client {
     private static Board board = new Board(8, 8);
@@ -136,6 +137,8 @@ class Client {
 
         System.out.println("Entrez votre coup : ");
         String dataToSend = executeNextMove(board, board.getPlayerColor().getValue());
+        System.out.println("PION Joueur restant: " + board.getPlayerPions().size());
+        System.out.println("PION Ennemi restant: " + board.getEnnemyPions().size());
         printBoardInConsole(board);
 
         output.write(dataToSend.getBytes(), 0, dataToSend.length());

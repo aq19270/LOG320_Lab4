@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Evaluation {
-    final static double MOBILITY_COEFFICIENT = 6;
-    final static double CENTRALISATION_COEFFICIENT = 4;
+    final static double MOBILITY_COEFFICIENT = 0;
+    final static double CENTRALISATION_COEFFICIENT = 10;
+    final static double CONCENTRATION_COEFFICIENT = 20;
+    final static double QUADS_COEFFICIENT = 0;
 
     //////////////////
     // MOBILITY CONST
@@ -61,9 +63,10 @@ public class Evaluation {
             return Double.NEGATIVE_INFINITY;
         }
 
-//        playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
+        playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
         playerScore += evaluateCentralisation(board) * CENTRALISATION_COEFFICIENT;
-
+        playerScore += evaluateConcentration(board) * CONCENTRATION_COEFFICIENT;
+        playerScore += evaluateQuads(board) * QUADS_COEFFICIENT;
         return playerScore;
     }
 
@@ -204,12 +207,12 @@ public class Evaluation {
         return visited.size() == board.getEnnemyPions().size();
     }
 
-    private static float concentration(Board board, int playerColor) {
-        Pion com = getCentreOfMass(board, playerColor);
+    private static float evaluateConcentration(Board board) {
+        Pion com = getCentreOfMass(board);
         int difrow;
         int difcol;
         int sumDistances = 0;
-        ArrayList<Pion> pionPlayer = (playerColor == Pion.colors.white.getValue() ? board.getPionsBlanc() : board.getPionsNoir());
+        ArrayList<Pion> pionPlayer = board.getPlayerPions();
         for (Pion p : pionPlayer) {
             difrow = Math.abs(com.getY() - p.getY());
             difcol = Math.abs(com.getX() - p.getX());
@@ -220,8 +223,8 @@ public class Evaluation {
         return 1 / surplus;
     }
 
-    public static Pion getCentreOfMass(Board board, int playerColor) {
-        ArrayList<Pion> pionPlayer = (playerColor == Pion.colors.white.getValue() ? board.getPionsBlanc() : board.getPionsNoir());
+    public static Pion getCentreOfMass(Board board) {
+        ArrayList<Pion> pionPlayer = board.getPlayerPions();
         int x = 0;
         int y = 0;
         for (Pion p : pionPlayer) {
@@ -233,20 +236,16 @@ public class Evaluation {
         return new Pion(x, y, Pion.colors.white);
     }
 
-    private static int smartEvaluateBoard(Board board, int playerColor) {
-        return 0;
-    }
-
     private static float evaluateQuads(Board board) {
         int playerColor = board.getPlayerColor().getValue();
         int enemyColor = board.getEnnemyColor().getValue();
         int nbQuadsPlayer = 0;
         int nbQuadsEnemy = 0;
-        Case centreOfMass = board.getCase(4, 4); // TO DO remplacer par la bonne fonction de détermination du centre
-        int minX = centreOfMass.getPion().getX() - 2 >= 0 ? centreOfMass.getPion().getX() : 0;
-        int maxX = centreOfMass.getPion().getX() + 2 <= 7 ? centreOfMass.getPion().getX() : 7;
-        int minY = centreOfMass.getPion().getY() - 2 >= 0 ? centreOfMass.getPion().getY() : 0;
-        int maxY = centreOfMass.getPion().getY() + 2 <= 7 ? centreOfMass.getPion().getY() : 7;
+        Pion centreOfMass = getCentreOfMass(board);
+        int minX = centreOfMass.getX() - 2 >= 0 ? centreOfMass.getX() : 0;
+        int maxX = centreOfMass.getX() + 2 <= 7 ? centreOfMass.getX() : 7;
+        int minY = centreOfMass.getY() - 2 >= 0 ? centreOfMass.getY() : 0;
+        int maxY = centreOfMass.getY() + 2 <= 7 ? centreOfMass.getY() : 7;
         for (int i = minX; i < maxX; i++) {
             for (int j = minY; j < maxY; j++) {
                 int nbCasePlayer = 0;

@@ -9,19 +9,22 @@ public class Node {
     public double score;
 
     public Node(Board board) {
-        this.setBoard(board);
+        this.board = board;
+//        this.setBoard(board);
         this.children = new ArrayList<>();
     }
 
     public static Node buildTree(Board board, int player, int depth) {
         if (depth < 0)
             return null;
-        ArrayList<String> moves = Movement.generateAllPossibleMoves(board, player);
         Node node = new Node(board);
+        ArrayList<String> moves = Movement.generateAllPossibleMoves(board, player);
         int j = 0;
+        Board copy;
         for (String move : moves) {
-            Movement.executeMove(move, node.board);
-            node.addChildAt(j++, buildTree(node.board, board.changePlayer(player), depth - 1), move);
+            copy = node.board.clone();
+            Movement.executeMove(move, copy);
+            node.addChildAt(j++, buildTree(copy, board.changePlayer(player), depth - 1), move);
         }
         return node;
     }

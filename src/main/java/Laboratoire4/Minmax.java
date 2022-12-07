@@ -1,22 +1,28 @@
 package Laboratoire4;
 
-import java.util.ArrayList;
-
 public class Minmax {
     public static String findBestMove(Board board, int depth) {
-        Node root = Node.buildTree(board, board.getPlayerColor().getValue(), depth);
-        ScoreNode value = alphabeta(root, depth, Double.MIN_VALUE, Double.MAX_VALUE, true);
-        System.out.println(value.node.getNodeData().getMove());
-        return value.node.getNodeData().getMove();
+        Double value = Double.NEGATIVE_INFINITY;
+        ScoreNode ab;
+        String move = "";
+        Node tree = Node.buildTree(board, board.getPlayerColor().getValue(), depth);
+        for (Node node : tree.getChildren()) {
+            ab = alphabeta(node, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
+            if (ab.score > value) {
+                value = ab.score;
+                move = ab.node.getMove();
+            }
+        }
+        return move;
     }
 
     public static ScoreNode alphabeta(Node node, int depth, double alpha, double beta, boolean maximizing) {
         double value;
         if (depth == 0 || node.isLeaf()) {
-            return new ScoreNode(Evaluation.evaluateBoard(node.getNodeData().getBoard()), node);
+            return new ScoreNode(Evaluation.evaluateBoard(node.getBoard()), node);
         }
         if (maximizing) {
-            value = Double.MIN_VALUE;
+            value = Double.NEGATIVE_INFINITY;
             for (Node child : node.getChildren()) {
                 value = Math.max(value, alphabeta(child, depth - 1, alpha, beta, false).score);
                 if (value >= beta)
@@ -25,7 +31,7 @@ public class Minmax {
             }
             return new ScoreNode(value, node);
         } else {
-            value = Double.MAX_VALUE;
+            value = Double.POSITIVE_INFINITY;
             for (Node child : node.getChildren()) {
                 value = Math.min(value, alphabeta(child, depth - 1, alpha, beta, true).score);
                 if (value <= alpha)

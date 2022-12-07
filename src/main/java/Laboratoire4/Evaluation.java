@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Evaluation {
-    final static double MOBILITY_COEFFICIENT = 0;
+    final static double MOBILITY_COEFFICIENT = 15;
     final static double CENTRALISATION_COEFFICIENT = 10;
     final static double CONCENTRATION_COEFFICIENT = 20;
     final static double QUADS_COEFFICIENT = 0;
@@ -66,7 +66,7 @@ public class Evaluation {
         playerScore += evaluateMobility(board) * MOBILITY_COEFFICIENT;
         playerScore += evaluateCentralisation(board) * CENTRALISATION_COEFFICIENT;
         playerScore += evaluateConcentration(board) * CONCENTRATION_COEFFICIENT;
-        playerScore += evaluateQuads(board) * QUADS_COEFFICIENT;
+//        playerScore += evaluateQuads(board) * QUADS_COEFFICIENT;
         return playerScore;
     }
 

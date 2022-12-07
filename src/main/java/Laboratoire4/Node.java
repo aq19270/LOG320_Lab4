@@ -20,8 +20,7 @@ public class Node {
         int j = 0;
         for (String move : moves) {
             Movement.executeMove(move, node.board);
-            node.setMove(move);
-            node.addChildAt(j++, buildTree(node.board, board.changePlayer(player), depth - 1));
+            node.addChildAt(j++, buildTree(node.board, board.changePlayer(player), depth - 1), move);
         }
         return node;
     }
@@ -44,7 +43,10 @@ public class Node {
     public ArrayList<Node> getChildren() {
         return children;
     }
-    public void addChildAt(int index, Node node) {
-        this.children.add(index, node);
+    public void addChildAt(int index, Node node, String move) {
+        if (node != null) {
+            node.setMove(move);
+            this.children.add(index, node);
+        }
     }
 }

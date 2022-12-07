@@ -2,10 +2,18 @@ package Laboratoire4;
 
 public class Minmax {
     public static String findBestMove(Board board, int depth) {
-        Node root = Node.buildTree(board, board.getPlayerColor().getValue(), depth);
-        ScoreNode value = alphabeta(root, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
-        System.out.println(value.node.getMove());
-        return value.node.getMove();
+        Double value = Double.NEGATIVE_INFINITY;
+        ScoreNode ab;
+        String move = "";
+        Node tree = Node.buildTree(board, board.getPlayerColor().getValue(), depth);
+        for (Node node : tree.getChildren()) {
+            ab = alphabeta(node, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
+            if (ab.score > value) {
+                value = ab.score;
+                move = ab.node.getMove();
+            }
+        }
+        return move;
     }
 
     public static ScoreNode alphabeta(Node node, int depth, double alpha, double beta, boolean maximizing) {

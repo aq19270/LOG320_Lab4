@@ -1,24 +1,24 @@
 package Laboratoire4;
 
 public class Minmax {
-    public static String findBestMove(Board board, int depth) {
+    public static String findBestMove(Board board, int depth, boolean captured) {
         ScoreNode ab;
         Node tree = Node.buildTree(board, board.getPlayerColor().getValue(), depth);
-        ab = alphabeta(tree, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
+        ab = alphabeta(tree, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true, captured);
         return ab.move;
     }
 
-    public static ScoreNode alphabeta(Node node, int depth, double alpha, double beta, boolean maximizing) {
+    public static ScoreNode alphabeta(Node node, int depth, double alpha, double beta, boolean maximizing, boolean captured) {
         double value;
         ScoreNode sn;
         String bestMove = "";
-        if (depth == 0 || node.isLeaf() || Evaluation.isPlayerWinning(node.getBoard())) {
+        if (depth == 0 || node.isLeaf() || (Evaluation.isPlayerWinning(node.getBoard()) && depth != 3 && !captured)) {
             return new ScoreNode(Evaluation.evaluateBoard(node.getBoard()), node, bestMove);
         }
         if (maximizing) {
             value = Double.NEGATIVE_INFINITY;
             for (Node child : node.getChildren()) {
-                sn = alphabeta(child, depth - 1, alpha, beta, false);
+                sn = alphabeta(child, depth - 1, alpha, beta, false, captured);
                 if (value < sn.score)
                     bestMove = sn.node.getMove();
                 value = Math.max(value, sn.score);
@@ -31,7 +31,7 @@ public class Minmax {
         } else {
             value = Double.POSITIVE_INFINITY;
             for (Node child : node.getChildren()) {
-                sn = alphabeta(child, depth - 1, alpha, beta, true);
+                sn = alphabeta(child, depth - 1, alpha, beta, true, captured);
                 if (value > sn.score)
                     bestMove = sn.node.getMove();
                 value = Math.min(value, sn.score);

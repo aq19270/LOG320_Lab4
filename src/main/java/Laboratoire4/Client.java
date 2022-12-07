@@ -193,7 +193,7 @@ class Client {
     private static String executeNextMove(Board currentBoard, int playerColor, boolean captured) {
         Board boardCopy = currentBoard.clone();
 
-        String nextMove = Minmax.findBestMove(boardCopy, 3);
+        String nextMove = Minmax.findBestMove(boardCopy, 3, captured);
         String dataToSend = nextMove.substring(0, 2) + " " + nextMove.substring(2);
 
         Movement.executeMove(nextMove, currentBoard);

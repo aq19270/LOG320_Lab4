@@ -1,6 +1,5 @@
 package Laboratoire4;
 
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,18 +25,17 @@ public class Evaluation {
     final static int[][] WEIGHT_MATRIX = {
             /* 1 2 3 4 5 6 7 8 */
             /* A */ { -80, -25, -20, -20, -20, -20, -25, -80 },
-            /* B */ { -25,  10,  10,  10,  10,  10,  10, -25 },
-            /* C */ { -20,  10,  25,  25,  25,  25,  10, -20 },
-            /* D */ { -20,  10,  25,  50,  50,  25,  10, -20 },
-            /* E */ { -20,  10,  25,  50,  50,  25,  10, -20 },
-            /* F */ { -20,  10,  25,  25,  25,  25,  10, -20 },
-            /* G */ { -25,  10,  10,  10,  10,  10,  10, -25 },
+            /* B */ { -25, 10, 10, 10, 10, 10, 10, -25 },
+            /* C */ { -20, 10, 25, 25, 25, 25, 10, -20 },
+            /* D */ { -20, 10, 25, 50, 50, 25, 10, -20 },
+            /* E */ { -20, 10, 25, 50, 50, 25, 10, -20 },
+            /* F */ { -20, 10, 25, 25, 25, 25, 10, -20 },
+            /* G */ { -25, 10, 10, 10, 10, 10, 10, -25 },
             /* H */ { -80, -25, -20, -20, -20, -20, -25, -80 },
     };
 
-
     public static double evaluateBoard(Board board) {
-//        return naiveEvaluateBoard(board);
+        // return naiveEvaluateBoard(board);
         return smartEvaluateBoard(board);
     }
 
@@ -51,11 +49,11 @@ public class Evaluation {
         boolean isWinning = isPlayerWinning(board);
         boolean isLosing = isEnnemyWinning(board);
 
-        if(isWinning && isLosing) {
+        if (isWinning && isLosing) {
             return 0; // DRAW
         }
 
-        if(isWinning) {
+        if (isWinning) {
             return Double.POSITIVE_INFINITY;
         }
 
@@ -78,7 +76,6 @@ public class Evaluation {
         double playerMobilityValue = getMovesValue(board, allPlayerMove, board.getPlayerColor());
         double ennemyMobilityValue = getMovesValue(board, allEnnemyMove, board.getEnnemyColor());
 
-
         return (playerMobilityValue - ennemyMobilityValue) / maxPossibleValue;
     }
 
@@ -86,20 +83,20 @@ public class Evaluation {
         Case currentCase;
         int x, y;
         double moveValue;
-        double  mobilityValue = 0;
+        double mobilityValue = 0;
 
-        for(String move : moves) {
+        for (String move : moves) {
             moveValue = MOVE_VALUE;
             int[] position = Movement.getPosFromString(move.substring(2));
             x = position[0];
             y = position[1];
 
             currentCase = board.getCase(x, y);
-            if(!currentCase.isEmpty() && currentCase.getPion().getColor() != color) {
+            if (!currentCase.isEmpty() && currentCase.getPion().getColor() != color) {
                 moveValue *= CAPTURE_MODIFIER;
             }
 
-            if(isOnEdge(x, y)) {
+            if (isOnEdge(x, y)) {
                 moveValue *= EDGE_COEFFICIENT;
             }
 
@@ -125,7 +122,6 @@ public class Evaluation {
         return (playerScore.get() - ennemyScore.get()) / MAX_POSSIBLE_VALUE;
     }
 
-
     private static boolean isOnEdge(int x, int y) {
         final int MIN = 0;
         final int MAX = 7;
@@ -144,23 +140,21 @@ public class Evaluation {
             visited.push(currentPion);
 
             for (int x = -1; x <= 1; x++) {
-                for(int y = -1; y <= 1; y++) {
-                    if(x == 0 && y == 0) {
+                for (int y = -1; y <= 1; y++) {
+                    if (x == 0 && y == 0) {
                         continue; // don't evaluate itself
                     }
 
                     int caseX = x + currentPion.getX();
                     int caseY = y + currentPion.getY();
 
-                    if(!Board.inBound(caseX, 0 ,7) || !Board.inBound(caseY, 0, 7)) {
+                    if (!Board.inBound(caseX, 0, 7) || !Board.inBound(caseY, 0, 7)) {
                         continue;
                     }
 
-                    if(
-                            !board.getCase(caseX, caseY).isEmpty()
+                    if (!board.getCase(caseX, caseY).isEmpty()
                             && board.getCase(caseX, caseY).getPion().getColor() == board.getPlayerColor()
-                            && !visited.contains(board.getCase(caseX, caseY).getPion())
-                    ) {
+                            && !visited.contains(board.getCase(caseX, caseY).getPion())) {
                         toVisit.push(board.getCase(caseX, caseY).getPion());
                     }
                 }
@@ -181,23 +175,21 @@ public class Evaluation {
             visited.push(currentPion);
 
             for (int x = -1; x <= 1; x++) {
-                for(int y = -1; y <= 1; y++) {
-                    if(x == 0 && y == 0) {
+                for (int y = -1; y <= 1; y++) {
+                    if (x == 0 && y == 0) {
                         continue; // don't evaluate itself
                     }
 
                     int caseX = x + currentPion.getX();
                     int caseY = y + currentPion.getY();
 
-                    if(!Board.inBound(caseX, 0 ,7) || !Board.inBound(caseY, 0, 7)) {
+                    if (!Board.inBound(caseX, 0, 7) || !Board.inBound(caseY, 0, 7)) {
                         continue;
                     }
 
-                    if(
-                            !board.getCase(caseX, caseY).isEmpty()
-                                    && board.getCase(caseX, caseY).getPion().getColor() == board.getEnnemyColor()
-                                    && !visited.contains(board.getCase(caseX, caseY).getPion())
-                    ) {
+                    if (!board.getCase(caseX, caseY).isEmpty()
+                            && board.getCase(caseX, caseY).getPion().getColor() == board.getEnnemyColor()
+                            && !visited.contains(board.getCase(caseX, caseY).getPion())) {
                         toVisit.push(board.getCase(caseX, caseY).getPion());
                     }
                 }
@@ -218,7 +210,8 @@ public class Evaluation {
             difcol = Math.abs(com.getX() - p.getX());
             sumDistances += Math.max(difrow, difcol);
         }
-        int sumMinDistances = pionPlayer.size() - 1 <= 8 ? pionPlayer.size() - 1 : 8 + ((pionPlayer.size() - 1) % 8 * 2);
+        int sumMinDistances = pionPlayer.size() - 1 <= 8 ? pionPlayer.size() - 1
+                : 8 + ((pionPlayer.size() - 1) % 8 * 2);
         int surplus = sumDistances - sumMinDistances;
         return 1 / surplus;
     }
@@ -243,28 +236,30 @@ public class Evaluation {
         int nbQuadsEnemy = 0;
         Pion centreOfMass = getCentreOfMass(board);
         int minX = centreOfMass.getX() - 2 >= 0 ? centreOfMass.getX() : 0;
-        int maxX = centreOfMass.getX() + 2 <= 7 ? centreOfMass.getX() : 7;
+        int maxX = centreOfMass.getX() + 2 <= 6 ? centreOfMass.getX() : 6;
         int minY = centreOfMass.getY() - 2 >= 0 ? centreOfMass.getY() : 0;
-        int maxY = centreOfMass.getY() + 2 <= 7 ? centreOfMass.getY() : 7;
+        int maxY = centreOfMass.getY() + 2 <= 6 ? centreOfMass.getY() : 6;
         for (int i = minX; i < maxX; i++) {
             for (int j = minY; j < maxY; j++) {
                 int nbCasePlayer = 0;
                 int nbCaseEnemy = 0;
                 for (int k = 0; k < 2; k++) {
                     for (int l = 0; l < 2; l++) {
-                        if (board.getCase(i + k, j + l).getPion().getColorValue() == playerColor) {
-                            nbCasePlayer += 1;
-                        }
-                        if (board.getCase(i + k, j + l).getPion().getColorValue() == enemyColor) {
-                            nbCaseEnemy += 1;
-                        }
-                        if (nbCasePlayer >= 3) {
-                            nbQuadsPlayer += 1;
-                        }
-                        if (nbCaseEnemy >= 3) {
-                            nbQuadsEnemy += 1;
+                        if (!board.getCase(i + k, j + l).isEmpty()) {
+                            if (board.getCase(i + k, j + l).getPion().getColorValue() == playerColor) {
+                                nbCasePlayer += 1;
+                            }
+                            if (board.getCase(i + k, j + l).getPion().getColorValue() == enemyColor) {
+                                nbCaseEnemy += 1;
+                            }
                         }
                     }
+                }
+                if (nbCasePlayer >= 3) {
+                    nbQuadsPlayer += 1;
+                }
+                if (nbCaseEnemy >= 3) {
+                    nbQuadsEnemy += 1;
                 }
             }
         }

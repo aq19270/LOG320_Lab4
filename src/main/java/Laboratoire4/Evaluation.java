@@ -155,8 +155,7 @@ public class Evaluation {
                     if (!board.getCase(caseX, caseY).isEmpty()
                             && board.getCase(caseX, caseY).getPion().getColor() == board.getPlayerColor()
                             && !visited.contains(board.getCase(caseX, caseY).getPion())
-                            && !toVisit.contains(board.getCase(caseX, caseY).getPion()))
-                    {
+                            && !toVisit.contains(board.getCase(caseX, caseY).getPion())) {
                         toVisit.push(board.getCase(caseX, caseY).getPion());
                     }
                 }
@@ -192,8 +191,7 @@ public class Evaluation {
                     if (!board.getCase(caseX, caseY).isEmpty()
                             && board.getCase(caseX, caseY).getPion().getColor() == board.getEnnemyColor()
                             && !visited.contains(board.getCase(caseX, caseY).getPion())
-                            && !toVisit.contains(board.getCase(caseX, caseY).getPion()))
-                    {
+                            && !toVisit.contains(board.getCase(caseX, caseY).getPion())) {
                         toVisit.push(board.getCase(caseX, caseY).getPion());
                     }
                 }
@@ -243,11 +241,10 @@ public class Evaluation {
         int nbQuadsPlayer = 0;
         int nbQuadsEnemy = 0;
         Pion centreOfMass = getCentreOfMass(board);
-        int minX = centreOfMass.getX() - 2 >= 0 ? centreOfMass.getX() : 0;
-        int maxX = centreOfMass.getX() + 2 <= 6 ? centreOfMass.getX() : 6;
-        int minY = centreOfMass.getY() - 2 >= 0 ? centreOfMass.getY() : 0;
-        int maxY = centreOfMass.getY() + 2 <= 6 ? centreOfMass.getY() : 6;
-
+        int minX = centreOfMass.getX() - 2 >= 0 ? centreOfMass.getX() - 2 : 0;
+        int maxX = centreOfMass.getX() + 2 <= 6 ? centreOfMass.getX() + 2 : 6;
+        int minY = centreOfMass.getY() - 2 >= 0 ? centreOfMass.getY() - 2 : 0;
+        int maxY = centreOfMass.getY() + 2 <= 6 ? centreOfMass.getY() + 2 : 6;
         int nbCasePlayer;
         int nbCaseEnemy;
         for (int i = minX; i < maxX; i++) {

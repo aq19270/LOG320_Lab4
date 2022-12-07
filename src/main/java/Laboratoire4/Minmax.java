@@ -4,14 +4,14 @@ public class Minmax {
     public static String findBestMove(Board board, int depth) {
         Node root = Node.buildTree(board, board.getPlayerColor().getValue(), depth);
         ScoreNode value = alphabeta(root, depth, Double.MIN_VALUE, Double.MAX_VALUE, true);
-        System.out.println(value.node.getNodeData().getMove());
-        return value.node.getNodeData().getMove();
+        System.out.println(value.node.getMove());
+        return value.node.getMove();
     }
 
     public static ScoreNode alphabeta(Node node, int depth, double alpha, double beta, boolean maximizing) {
         double value;
         if (depth == 0 || node.isLeaf()) {
-            return new ScoreNode(Evaluation.evaluateBoard(node.getNodeData().getBoard()), node);
+            return new ScoreNode(Evaluation.evaluateBoard(node.getBoard()), node);
         }
         if (maximizing) {
             value = Double.MIN_VALUE;

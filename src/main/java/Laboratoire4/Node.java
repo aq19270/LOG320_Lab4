@@ -7,18 +7,14 @@ public class Node {
     private String move;
     private ArrayList<Node> children;
 
-    public Node() {
-        this.children = new ArrayList<>();
-    }
-
-    public Node(Board board, int nbOfChildren) {
+    public Node(Board board) {
         this.setBoard(board);
         this.children = new ArrayList<>();
     }
 
     public static Node buildTree(Board board, int player, int depth) {
         ArrayList<String> moves = Movement.generateAllPossibleMoves(board, player);
-        Node node = new Node(board, moves.size());
+        Node node = new Node(board);
         if (depth == 0)
             return node;
         int j = 0;

@@ -6,6 +6,7 @@ public class Node {
     private Board board;
     private String move;
     private ArrayList<Node> children;
+    public double score;
 
     public Node(Board board) {
         this.setBoard(board);
